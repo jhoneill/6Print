@@ -1,0 +1,26 @@
+###########################################################################################
+# Copyright (c) Jamess O'Neill. All rights reserved.
+# Licensed under the MIT License.
+#
+# Module manifest for module '6Print'
+
+@{
+    ModuleVersion        =   '0.0.1'
+    CompatiblePSEditions = @('Core')
+    GUID                 =   'b5fb75ca-9849-42c0-8aeb-101467e5c1e1'
+    Author               =   "James O'Neill"
+    CompanyName          =   'Mobula Consulting'
+    Copyright            =   "© James O'Neill 2018. All rights reserved"
+    Description          =   'This module adds Out-Printer Functionality back into PowerShell Core'
+    PowerShellVersion    =   '5.0'
+    NestedModules        =   'Out-Printer.ps1'
+    FunctionsToExport    = @('Out-Printer')
+    PrivateData = @{
+        PSData = @{
+            Tags        = @('Printing','Compatibility', 'Core')
+            LicenseUri  = 'https://opensource.org/licenses/MIT'
+            #ProjectUri = 'https://github.com/xxxx'
+            ReleaseNotes = 'This is the first release of this module'
+        }
+    }   
+}
