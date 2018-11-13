@@ -1,5 +1,5 @@
 #####################################################
-# Copyright (c) Jamess O'Neill. All rights reserved.#
+# Copyright (c) James O'Neill. All rights reserved. #
 # Licensed under the MIT License.                   #
 #####################################################
 
