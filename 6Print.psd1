@@ -1,9 +1,9 @@
-###########################################################################################
-# Copyright (c) Jamess O'Neill. All rights reserved.
-# Licensed under the MIT License.
-#
-# Module manifest for module '6Print'
+#####################################################
+# Copyright (c) Jamess O'Neill. All rights reserved.#
+# Licensed under the MIT License.                   #
+#####################################################
 
+# Manifest for module '6Print'
 @{
     ModuleVersion        =   '0.0.1'
     CompatiblePSEditions = @('Core')
@@ -17,10 +17,10 @@
     FunctionsToExport    = @('Out-Printer')
     PrivateData = @{
         PSData = @{
-            Tags        = @('Printing','Compatibility', 'Core')
-            LicenseUri  = 'https://opensource.org/licenses/MIT'
-            #ProjectUri = 'https://github.com/xxxx'
-            ReleaseNotes = 'This is the first release of this module'
+            Tags         = @('Printing','Compatibility', 'Core')
+            LicenseUri   =   'https://opensource.org/licenses/MIT'
+            ProjectUri   =   'https://github.com/jhoneill/6Print'
+            ReleaseNotes =   'This is the first release of this module'
         }
-    }   
+    }
 }
