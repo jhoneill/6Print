@@ -5,7 +5,7 @@
 
 # Manifest for module '6Print'
 @{
-    ModuleVersion        =   '0.0.1'
+    ModuleVersion        =   '0.1.0'
     CompatiblePSEditions = @('Core')
     GUID                 =   'b5fb75ca-9849-42c0-8aeb-101467e5c1e1'
     Author               =   "James O'Neill"
