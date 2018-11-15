@@ -12,7 +12,7 @@
     CompanyName          =   'Mobula Consulting'
     Copyright            =   "© James O'Neill 2018. All rights reserved"
     Description          =   'This module adds Out-Printer Functionality back into PowerShell Core'
-    PowerShellVersion    =   '5.0'
+    PowerShellVersion    =   '5.1'
     NestedModules        =   'Out-Printer.ps1'
     FunctionsToExport    = @('Out-Printer')
     PrivateData = @{
