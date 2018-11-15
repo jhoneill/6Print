@@ -133,7 +133,7 @@ function Out-Printer {
         #Collect output in $linesToPrint. Catch bitmap objects. Other objects will be turned to text later.
         if ($InputObject -is [System.Drawing.Bitmap]) {$bitmap = $InputObject }
         elseif ($Path) {$linesToPrint  = Get-Content -Path $Path}
-        else           {$linestoprint += $InputObject           }
+        else           {$linestoprint += $InputObject -split "\r\n+"  }
     }
 
     End     {
