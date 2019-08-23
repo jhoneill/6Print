@@ -36,48 +36,83 @@ Out-Printer [-ImagePath] <String> [[-PrinterName] <String>] [[-PaperSize] <Strin
 ```
 
 ## DESCRIPTION
-  Out-Printer sends output to the default printer or to an alternate printer,
-  if one is specified. Font, paper-orientation, paper-size, and margins can all 
-  be set, and page numbers can be requested.  
-  Content can be piped into the command, or it can take the path to a text or image 
-  file as a parameter. 
-  When using Print to PDF or similar output-to-file type printers, the file name
-  can be specified, and if it is, the file can be opened in its default viewer. 
-
+  Out-Printer sends output to the default printer or to an alternate printer,   
+  if one is specified. Font, paper-orientation, paper-size, and margins can all    
+  be set, and page numbers can be requested.     
+  Content can be piped into the command, optionally using its alias LP to give a   
+  unix like | lp, or it can take the path to a text or image file as a parameter.    
+  If input is piped to the command it attempts to apply default formatting and    
+  wraps text to fit the page size. If text is read from a file is is sent "as-is".    
+  When using Print to PDF or similar output-to-file type printers, the file name   
+  can be specified, and if it is, the file can be opened in its default viewer.    
+  There is an option to add page numbers which are positioned at the top of text   
+  pages (not image ones), if there is not sufficient border for the page number,   
+  the top of the printing area is moved down to avoid overlap. 
+  When setting margins, be aware that Windows works in hundreths of an inch     
+  when dealing with paper sizes, font sizes are in points - 1pt = 1/120th inch    
+  - so inch-based is not as stupid as it might sound. If you are working in mm     
+  for borders multiply by 4 for an easy conversion, or divide by 0.254 for    
+   a more accurate one.
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> dir | Out-Printer -PrinterName 'Microsoft Print to PDF' -PrintFileName .\files.pdf -LeftMargin 50 -Verbose  
+PS C:\> get-help out-printer | Out-Printer
 ```
 
-Sends a directory listing to the 'Microsoft Print to PDF' printer, creating
-a file named "files.pdf" with a left margin of 0.50 inches. 
-This uses portrait format on the default paper-size, with the default typeface and font size.
-Verbose output will show the printer name, file name, and paper size. 
+Sends this help to the default printer using the default settings.
 
 ### Example 2
 ```powershell
-PS C:\> Out-Printer -Path .\Out-Printer.psd1 -PrinterName 'Microsoft Print to PDF' -PrintFileName .\listing.pdf -Landscape -PaperSize a3 -FontSize 9 
+PS C:\> dir | Out-Printer -PrinterName 'Microsoft Print to PDF' -PrintFileName .\files.pdf -LeftMargin 50 -Verbose
 ```
 
-Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named "listing.pdf". 
-Here the printing is rotated to LandScape and A3 size paper is used. 
-The font uses the default typeface set in 9 point size.
+Sends a directory listing to the 'Microsoft Print to PDF' printer.    
+If the file name is not specified, a dialog will appear, but in this case "files.pdf"     
+is passed from the command line.    
+The print will a left margin of 0.50 inches, using the default paper-size in portrait format,    
+with the default typeface and font size.    
+Verbose output will show the printer name, file name, and paper size.    
 
 ### Example 3
+```powershell
+PS C:\> Out-Printer -Path .\Out-Printer.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9
+```
+
+Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named "listing.pdf".    
+Here the printing is rotated to LandScape and A3 size paper is used.    
+The font uses the Calibri typeface set in 9 point size.   
+
+### Example 4
+```powershell
+PS C:\> Out-Printer -Verbose -ImagePath .\lewis.jpg  -LandScape
+```
+
+Sends a Picture to the default printer, printing in Landscape mode.     
+Specifiying verbose will give information on the scaling applied.
+
+### Example 5
 ```powershell
 PS C:\> Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 
 ```
 
-This time services are formatted as an autosized table, and sent to OneNote.
-The page margins are customized and font reduced to fit on the page.
+This time services are formatted as an autosized table, and sent to OneNote.   
+The page margins are customized and font reduced to fit on the page.   
+
+### Example 6
+```powershell
+PS C:\> dir | lp  -Dest C:\Users\mcp\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open
+```
+
+This Example addds page numbers, but also uses the alias lp ; FontName can be shortend to     
+Font, FontSize to size and "margin" omitted from each of the four margin parameters.    
+NumberPages and OpenDestinationFile can also be shortened.  
 
 
 ## PARAMETERS
 
 ### -BottomMargin
-Bottom Margin in units of 1/100th inch. (10mm ~ .4" = 40 Units, if working in mm, divide by 0.254).
+Bottom Margin in units of 1/100th inch.   
 Zero will be converted to minimum margin
 
 ```yaml
@@ -93,7 +128,7 @@ Accept wildcard characters: False
 ```
 
 ### -Destination
-Specifies the name of a file to print to so that PDF etc. don't require input. 
+Specifies the name of a file to print to so that PDF etc. don't require input.     
 If the file already exists it will be overwritten.
 
 ```yaml
@@ -234,7 +269,7 @@ If specified opens the print file after printing (ignored if the destination fil
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases:
+Aliases: Show:
 
 Required: False
 Position: Named
@@ -259,7 +294,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-Path of text file to be printed. 
+Path of text file to be printed.    
 Text read from a file is not be wrapped, to wrap text pipe the file into Out-Printer.
 
 ```yaml
@@ -333,3 +368,4 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+[Github](https://github.com/jhoneill/6Print)

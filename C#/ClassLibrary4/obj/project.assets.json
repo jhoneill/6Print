@@ -9661,11 +9661,11 @@
   "project": {
     "version": "6.2.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mcp\\source\\repos\\ClassLibrary4\\ClassLibrary4\\OutPrinter.csproj",
+      "projectUniqueName": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\ClassLibrary4\\OutPrinter.csproj",
       "projectName": "OutPrinter",
-      "projectPath": "C:\\Users\\mcp\\source\\repos\\ClassLibrary4\\ClassLibrary4\\OutPrinter.csproj",
+      "projectPath": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\ClassLibrary4\\OutPrinter.csproj",
       "packagesPath": "C:\\Users\\mcp\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mcp\\source\\repos\\ClassLibrary4\\ClassLibrary4\\obj\\",
+      "outputPath": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\ClassLibrary4\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

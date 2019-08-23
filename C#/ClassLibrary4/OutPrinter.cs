@@ -9,12 +9,11 @@ using System.Linq;
 
 namespace OutPrinter
 {
-    // Declare the class as a cmdlet and specify verb and noun for the cmdlet name.
+    // Declare the class as a pscmdlet and specify verb and noun for the cmdlet name. pscmdlet supports GetUnresolvedProviderPathFromPSPath which we want. Cmdlet does not
     [Cmdlet(VerbsData.Out, "Printer", DefaultParameterSetName = "Default")]
     [Alias("lp")]
-    public class OutPrinterCommand : Cmdlet
-    {
-        #region Declare the parameters for the cmdlet.
+    public class OutPrinterCommand : PSCmdlet   {
+        #region Param() block.
         //Specifies the content to be sent to the printer. This can be objects to print, or the target for piped objects.
         [Parameter(ValueFromPipeline = true, ParameterSetName = "Default", Position = 0, Mandatory = true)]
         public PSObject InputObject { get; set; }
@@ -30,7 +29,7 @@ namespace OutPrinter
         [Alias("Name")]
         public string PrinterName { get; set; }
         //Name of a paper-size on the selected printer (e.g A4, Letter)
-        [Parameter(Position = 2)]
+        [Parameter(Position = 2),ArgumentCompleter(typeof(PaperSizeCompleter))]
         public string PaperSize { get; set; }
         //Font name to use, e.g. Calibri, Arial, Consolas, "Courier New" (defaults to "Lucida Console")
         [Parameter(ParameterSetName = "Default", Position = 3)]
@@ -49,6 +48,7 @@ namespace OutPrinter
         public string Destination { get; set; }
         //If specified opens the print file (ignored if Print file is not specified) 
         [Parameter()]
+        [Alias("Show")]
         public SwitchParameter OpenDestinationFile { get; set; }
         //If specified page numbers will be added at the top of the page.
         [Parameter()]
@@ -75,7 +75,7 @@ namespace OutPrinter
         [Parameter()]
         public SwitchParameter NoImageScale { get; set; }
         #endregion
-        #region Declare other variables. 
+        #region Other properties of the class 
         // When printing text we the lines to print, print a page full, delete those lines, print the next page full. Until done 
         private List<string> LinesToPrint = new List<string>();
         // When data is piped in we collect the objects in the process block; in the end block Out-String to renders them and the results go into LinesToPrint. 
@@ -91,7 +91,7 @@ namespace OutPrinter
         //Used to track  the number of pages printed (may add an option to put the page number on the top of the page. 
         private int currentPageNo = 1;
         #endregion
-      
+        #region Argument Completers      
         private class PrinterNameCompleter : IArgumentCompleter
         {
             IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
@@ -105,7 +105,24 @@ namespace OutPrinter
                        Select(s => new CompletionResult("'" + s + "'"));
             }
         }
-
+        private class PaperSizeCompleter : IArgumentCompleter
+        {
+            IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
+                                                                              string parameterName,
+                                                                              string wordToComplete,
+                                                                              CommandAst commandAst,
+                                                                              IDictionary fakeBoundParameters)
+            {
+                List<CompletionResult> completionResults = new List<CompletionResult>();
+                System.Drawing.Printing.PrintDocument pd = new PrintDocument();
+                foreach (System.Drawing.Printing.PaperSize ps in pd.PrinterSettings.PaperSizes)
+                {
+                    if (ps.Kind.ToString().Contains(wordToComplete, StringComparison.CurrentCultureIgnoreCase)) {
+                        completionResults.Add(new CompletionResult("'" + ps.Kind.ToString() + "'")); }
+                }
+                return completionResults;
+            }
+        }
         private class FontNameCompleter : IArgumentCompleter
         {
             IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
@@ -120,9 +137,13 @@ namespace OutPrinter
                 {
                     if (f.Name.Contains(wordToComplete,StringComparison.CurrentCultureIgnoreCase)) { completionResults.Add(new CompletionResult("'" + f.Name + "'")); }
                 }
+                installedFonts.Dispose();
                 return completionResults;
             }
         }
+        #endregion
+
+        #region Handlers for the PrintPage event which do the actual printing of text or graphic
         private void pd_PrintText(object sender, PrintPageEventArgs ev)
         {
             float fontHeight = PrintFont.GetHeight(ev.Graphics);
@@ -167,7 +188,6 @@ namespace OutPrinter
                 ev.HasMorePages = false;
             }
         }
-
         private void pd_PrintGraphic(object sender, System.Drawing.Printing.PrintPageEventArgs ev)
         {
             WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing image. Page " + currentPageNo)));
@@ -204,11 +224,14 @@ namespace OutPrinter
             currentPageNo++;
             ev.HasMorePages = false;
         }
-               
+        #endregion
+        
+        //Overrides for the begin,process,end and Stop! pscmdlet methods
         protected override void BeginProcessing()
         {
             base.BeginProcessing();
             #region Select printer, paper size and orientation 
+            // We don't check the name is valid, if a bad name is passed this will cause an error which is what we want.
             if (null != PrinterName)
             {
                 PrintDocument.PrinterSettings.PrinterName = PrinterName;
@@ -216,7 +239,7 @@ namespace OutPrinter
             string layoutMsg = "Printing to '" + PrintDocument.PrinterSettings.PrinterName +"'";
             if (null != Destination)
             {
-                Destination = System.IO.Path.GetFullPath(Destination);
+                Destination = this.GetUnresolvedProviderPathFromPSPath(Destination);
                 if (System.IO.File.Exists(Destination))
                 {
                     System.IO.File.Delete(Destination);
@@ -226,11 +249,11 @@ namespace OutPrinter
                 layoutMsg = layoutMsg + " (" + Destination + ")";
             }
             if (null != PaperSize)
-            {
+            {  // There is probably a neater way do "is PaperSize in the list of PaperSize Kinds" using linq
                 bool FoundSize = false;
                 foreach (System.Drawing.Printing.PaperSize ps in PrintDocument.PrinterSettings.PaperSizes)
                 {
-                    if (ps.Kind.ToString() == PaperSize)
+                    if (string.Equals(ps.Kind.ToString() , PaperSize, StringComparison.CurrentCultureIgnoreCase))
                     {
                         FoundSize = true;
                         PrintDocument.DefaultPageSettings.PaperSize = ps;
@@ -310,6 +333,7 @@ namespace OutPrinter
             }
             #endregion
             #region Check user-specificed font exists, or fall back to lucida console. Determine chars per line. 
+            // There is probably a neater way do "is FontName in the list of InstalledFonts.Families Names" using linq
             bool fontfound = false;
             System.Drawing.Text.InstalledFontCollection installedFonts = new System.Drawing.Text.InstalledFontCollection();
             foreach (System.Drawing.FontFamily f in installedFonts.Families)
@@ -334,7 +358,7 @@ namespace OutPrinter
             #region Load any text file specified by -path - assume it fits to lines. 
             if (null != Path)
             {
-                Path = System.IO.Path.GetFullPath(Path);
+                Path = this.GetUnresolvedProviderPathFromPSPath(Path);
                 if (System.IO.File.Exists(Path))
                 {
                     WriteVerbose("Reading from " + Path);
@@ -346,7 +370,7 @@ namespace OutPrinter
                 }
                 else
                 {
-                    WriteWarning("Can't open file");
+                    WriteWarning("Can't open file '" + Path +"'." );
                 }
             }
             #endregion
@@ -367,7 +391,7 @@ namespace OutPrinter
             #region Load any image specified by -imagepath; print it, or any bitmap piped in.
             else if (null != ImagePath)
             {
-                ImagePath = System.IO.Path.GetFullPath(ImagePath);
+                ImagePath = this.GetUnresolvedProviderPathFromPSPath(ImagePath);
                 if (System.IO.File.Exists(ImagePath))
                 {
                     WriteVerbose("Reading from " + ImagePath);
@@ -387,7 +411,7 @@ namespace OutPrinter
         {
             base.EndProcessing();
             #region Print text
-            if ((ThingsToPrint.Count > 0) )   
+            if ((ThingsToPrint.Count > 0))
             {
                 WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), "Renderding text"));
                 // I think there must be a better way ( using Microsoft.PowerShell.Commands.OutStringCommand ? ) 
@@ -399,13 +423,16 @@ namespace OutPrinter
                 foreach (PSObject O in ps.Invoke()) {
                     LinesToPrint.Add(O.ToString());
                 }
+            }
+            if (LinesToPrint.Count > 0)
+            { 
                 WriteVerbose(LinesToPrint.Count.ToString() + " Lines to print.");
                 //All work gets done by the event handler for "print page" events
                 PrintDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd_PrintText);
                 PrintDocument.Print();
             }
             #endregion
-
+            #region Open the print file, if there is one and we were told to
             if (PrintDocument.PrinterSettings.PrintToFile && OpenDestinationFile)
             {
                 if (System.IO.File.Exists(PrintDocument.PrinterSettings.PrintFileName))
@@ -417,6 +444,7 @@ namespace OutPrinter
                         }
                     }.Start();
             }
+            #endregion  
             PrintDocument.Dispose();
         }
         protected override void StopProcessing()
@@ -424,6 +452,5 @@ namespace OutPrinter
             PrintDocument.Dispose();
             base.StopProcessing();
         }
-
     }
 }

@@ -7,3 +7,12 @@ C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\
 C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.AssemblyInfo.cs
 C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.dll
 C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.pdb
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\bin\Release\netcoreapp2.2\OutPrinter.deps.json
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\bin\Release\netcoreapp2.2\OutPrinter.dll
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\bin\Release\netcoreapp2.2\OutPrinter.pdb
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.csproj.CoreCompileInputs.cache
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.AssemblyInfoInputs.cache
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.AssemblyInfo.cs
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.dll
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.pdb
+C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.csprojAssemblyReference.cache
