@@ -40,15 +40,15 @@ Out-Printer [-ImagePath] <String> [[-PrinterName] <String>] [[-PaperSize] <Strin
   if one is specified. Font, paper-orientation, paper-size, and margins can all    
   be set, and page numbers can be requested.     
   Content can be piped into the command, optionally using its alias LP to give a   
-  unix like | lp, or it can take the path to a text or image file as a parameter.    
+  Unix like | lp, or it can take the path to a text or image file as a parameter.    
   If input is piped to the command it attempts to apply default formatting and    
   wraps text to fit the page size. If text is read from a file is is sent "as-is".    
   When using Print to PDF or similar output-to-file type printers, the file name   
   can be specified, and if it is, the file can be opened in its default viewer.    
   There is an option to add page numbers which are positioned at the top of text   
   pages (not image ones), if there is not sufficient border for the page number,   
-  the top of the printing area is moved down to avoid overlap. 
-  When setting margins, be aware that Windows works in hundreths of an inch     
+  the top of the printing area is moved down to avoid overlap.     
+  When setting margins, be aware that Windows works in hundredths of an inch     
   when dealing with paper sizes, font sizes are in points - 1pt = 1/120th inch    
   - so inch-based is not as stupid as it might sound. If you are working in mm     
   for borders multiply by 4 for an easy conversion, or divide by 0.254 for    
@@ -89,14 +89,14 @@ PS C:\> Out-Printer -Verbose -ImagePath .\lewis.jpg  -LandScape
 ```
 
 Sends a Picture to the default printer, printing in Landscape mode.     
-Specifiying verbose will give information on the scaling applied.
+Specifying verbose will give information on the scaling applied.
 
 ### Example 5
 ```powershell
 PS C:\> Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 
 ```
 
-This time services are formatted as an autosized table, and sent to OneNote.   
+This time services are formatted as an auto-sized table, and sent to OneNote.   
 The page margins are customized and font reduced to fit on the page.   
 
 ### Example 6
@@ -104,7 +104,7 @@ The page margins are customized and font reduced to fit on the page.
 PS C:\> dir | lp  -Dest C:\Users\mcp\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open
 ```
 
-This Example addds page numbers, but also uses the alias lp ; FontName can be shortend to     
+This Example adds page numbers, but also uses the alias lp ; FontName can be shortened to     
 Font, FontSize to size and "margin" omitted from each of the four margin parameters.    
 NumberPages and OpenDestinationFile can also be shortened.  
 
