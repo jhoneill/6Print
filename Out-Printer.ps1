@@ -139,7 +139,7 @@ function Out-Printer {
         else           {$linestoprint += $InputObject }
     }
 
-    End     {
+    End     {     
         $PrintDocument = New-Object -TypeName "System.Drawing.Printing.PrintDocument"
         #region apply printer Settings
         #If printer name is given, use it; otherwise use the default printer
@@ -168,10 +168,10 @@ function Out-Printer {
             $PrintDocument.DefaultPageSettings.Landscape = $false
             Write-Verbose -Message "$msg Portrait."
         }
-        if ($PSBoundParameters.ContainsKey('TopMargin'))    {
-                if ($TopMargin -eq 0) {$TopMargin =  $PrintDocument.DefaultPageSettings.HardMarginY }
-                $PrintDocument.DefaultPageSettings.Margins.Top    = $TopMargin
-        }
+            if ($PSBoundParameters.ContainsKey('TopMargin'))    {
+                    if ($TopMargin -eq 0) {$TopMargin =  $PrintDocument.DefaultPageSettings.HardMarginY }
+                    $PrintDocument.DefaultPageSettings.Margins.Top    = $TopMargin
+            }
         if ($PSBoundParameters.ContainsKey('BottonMargin')) {
             if ($BottonMargin -eq 0) {$BottonMargin =  $PrintDocument.DefaultPageSettings.HardMarginY }
             $PrintDocument.DefaultPageSettings.Margins.Bottom = $BottonMargin

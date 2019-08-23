@@ -1,0 +1,9 @@
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\bin\Release\netcoreapp2.2\OutPrinter.deps.json
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\bin\Release\netcoreapp2.2\OutPrinter.dll
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\bin\Release\netcoreapp2.2\OutPrinter.pdb
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.csprojAssemblyReference.cache
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.csproj.CoreCompileInputs.cache
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.AssemblyInfoInputs.cache
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.AssemblyInfo.cs
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.dll
+C:\Users\mcp\source\repos\ClassLibrary4\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.pdb
