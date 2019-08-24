@@ -3,16 +3,75 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Management.Automation;
 using System.Management.Automation.Language;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 
 namespace OutPrinter
 {
-    // Declare the class as a pscmdlet and specify verb and noun for the cmdlet name. pscmdlet supports GetUnresolvedProviderPathFromPSPath which we want. Cmdlet does not
+    #region Argument Completers      
+    class PrinterNameCompleter : IArgumentCompleter
+    {
+        IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
+                                                                          string parameterName,
+                                                                          string wordToComplete,
+                                                                          CommandAst commandAst,
+                                                                          IDictionary fakeBoundParameters)
+        {
+            return System.Drawing.Printing.PrinterSettings.InstalledPrinters.Cast<string>().ToArray().
+                   Where(new WildcardPattern("*" + wordToComplete + "*", WildcardOptions.IgnoreCase).IsMatch).
+                   Select(s => new CompletionResult("'" + s + "'"));
+        }
+    }
+    class PaperSizeCompleter : IArgumentCompleter
+    {
+        IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
+                                                                          string parameterName,
+                                                                          string wordToComplete,
+                                                                          CommandAst commandAst,
+                                                                          IDictionary fakeBoundParameters)
+        {
+            List<CompletionResult> completionResults = new List<CompletionResult>();
+            System.Drawing.Printing.PrintDocument pd = new PrintDocument();
+            foreach (System.Drawing.Printing.PaperSize ps in pd.PrinterSettings.PaperSizes)
+            {
+                if (ps.Kind.ToString().Contains(wordToComplete, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    completionResults.Add(new CompletionResult("'" + ps.Kind.ToString() + "'"));
+                }
+            }
+            pd.Dispose();
+            return completionResults;
+        }
+    }
+    class FontNameCompleter : IArgumentCompleter
+    {
+        IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
+                                                                          string parameterName,
+                                                                          string wordToComplete,
+                                                                          CommandAst commandAst,
+                                                                          IDictionary fakeBoundParameters)
+        {
+            List<CompletionResult> completionResults = new List<CompletionResult>();
+            System.Drawing.Text.InstalledFontCollection installedFonts = new System.Drawing.Text.InstalledFontCollection();
+            foreach (System.Drawing.FontFamily f in installedFonts.Families)
+            {
+                if (f.Name.Contains(wordToComplete, StringComparison.CurrentCultureIgnoreCase)) { completionResults.Add(new CompletionResult("'" + f.Name + "'")); }
+            }
+            installedFonts.Dispose();
+            return completionResults;
+        }
+    }
+    #endregion
+    
+    //Replacement for the the Out-Printer command which was in Windows PowerShell.
+    //Declare the class as a pscmdlet and specify verb and noun for the cmdlet name. 
+    //pscmdlet supports GetUnresolvedProviderPathFromPSPath which we want. Cmdlet does not so we'll use that throughout
     [Cmdlet(VerbsData.Out, "Printer", DefaultParameterSetName = "Default")]
     [Alias("lp")]
-    public class OutPrinterCommand : PSCmdlet   {
+    public class OutPrinterCommand : PSCmdlet
+    {
         #region Param() block.
         //Specifies the content to be sent to the printer. This can be objects to print, or the target for piped objects.
         [Parameter(ValueFromPipeline = true, ParameterSetName = "Default", Position = 0, Mandatory = true)]
@@ -29,7 +88,7 @@ namespace OutPrinter
         [Alias("Name")]
         public string PrinterName { get; set; }
         //Name of a paper-size on the selected printer (e.g A4, Letter)
-        [Parameter(Position = 2),ArgumentCompleter(typeof(PaperSizeCompleter))]
+        [Parameter(Position = 2), ArgumentCompleter(typeof(PaperSizeCompleter))]
         public string PaperSize { get; set; }
         //Font name to use, e.g. Calibri, Arial, Consolas, "Courier New" (defaults to "Lucida Console")
         [Parameter(ParameterSetName = "Default", Position = 3)]
@@ -84,65 +143,18 @@ namespace OutPrinter
         private System.Drawing.Bitmap Bitmap;
         //The object which does all the actual printing. Parameters are set in BEGIN, BitMaps printed in PROCESS, and Text printed in END
         private System.Drawing.Printing.PrintDocument PrintDocument = new System.Drawing.Printing.PrintDocument();
+        //Store the printer name so it can be restored at the end.
+        private string OriginalPrinterName;
+        //Store the page settings so they can be restored at the end.
+        private System.Drawing.Printing.PageSettings OriginalPaperPageSettings;
         //The font that we use for the printing. 
         private System.Drawing.Font PrintFont;
         //Width of the page - this is calculated when the the parameters are set in BEGIN, and used by Out-String in the END block
-        private int widthInChars = 80;
+        private int WidthInChars = 80;
         //Used to track  the number of pages printed (may add an option to put the page number on the top of the page. 
-        private int currentPageNo = 1;
+        private int CurrentPageNo = 1;
         #endregion
-        #region Argument Completers      
-        private class PrinterNameCompleter : IArgumentCompleter
-        {
-            IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
-                                                                              string parameterName,
-                                                                              string wordToComplete,
-                                                                              CommandAst commandAst,
-                                                                              IDictionary fakeBoundParameters)
-            {
-                return System.Drawing.Printing.PrinterSettings.InstalledPrinters.Cast<string>().ToArray().
-                       Where(new WildcardPattern("*" + wordToComplete + "*", WildcardOptions.IgnoreCase).IsMatch).
-                       Select(s => new CompletionResult("'" + s + "'"));
-            }
-        }
-        private class PaperSizeCompleter : IArgumentCompleter
-        {
-            IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
-                                                                              string parameterName,
-                                                                              string wordToComplete,
-                                                                              CommandAst commandAst,
-                                                                              IDictionary fakeBoundParameters)
-            {
-                List<CompletionResult> completionResults = new List<CompletionResult>();
-                System.Drawing.Printing.PrintDocument pd = new PrintDocument();
-                foreach (System.Drawing.Printing.PaperSize ps in pd.PrinterSettings.PaperSizes)
-                {
-                    if (ps.Kind.ToString().Contains(wordToComplete, StringComparison.CurrentCultureIgnoreCase)) {
-                        completionResults.Add(new CompletionResult("'" + ps.Kind.ToString() + "'")); }
-                }
-                return completionResults;
-            }
-        }
-        private class FontNameCompleter : IArgumentCompleter
-        {
-            IEnumerable<CompletionResult> IArgumentCompleter.CompleteArgument(string commandName,
-                                                                              string parameterName,
-                                                                              string wordToComplete,
-                                                                              CommandAst commandAst,
-                                                                              IDictionary fakeBoundParameters)
-            {
-                List<CompletionResult> completionResults = new List<CompletionResult>();
-                System.Drawing.Text.InstalledFontCollection installedFonts = new System.Drawing.Text.InstalledFontCollection();
-                foreach (System.Drawing.FontFamily f in installedFonts.Families)
-                {
-                    if (f.Name.Contains(wordToComplete,StringComparison.CurrentCultureIgnoreCase)) { completionResults.Add(new CompletionResult("'" + f.Name + "'")); }
-                }
-                installedFonts.Dispose();
-                return completionResults;
-            }
-        }
-        #endregion
-
+        
         #region Handlers for the PrintPage event which do the actual printing of text or graphic
         private void pd_PrintText(object sender, PrintPageEventArgs ev)
         {
@@ -154,20 +166,20 @@ namespace OutPrinter
             int linecount = 0;
             if (NumberPages)
             {
-                string PageLabel = "Page -- " + currentPageNo.ToString();
-                float left = ((float)PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageLabel, PrintFont).Width)/2;
+                string PageLabel = "Page -- " + CurrentPageNo.ToString();
+                float left = ((float)PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageLabel, PrintFont).Width) / 2;
                 ev.Graphics.DrawString(PageLabel, PrintFont, System.Drawing.Brushes.Black, left, PrintDocument.DefaultPageSettings.PrintableArea.Top);
                 if (PrintDocument.DefaultPageSettings.PrintableArea.Top + (2 * fontHeight) > ev.MarginBounds.Top)
                 {
                     topEdge = topEdge + (2 * fontHeight);
-                    linesPerPage = linesPerPage - 2; 
+                    linesPerPage = linesPerPage - 2;
                 }
             }
-            if (currentPageNo == 1)
+            if (CurrentPageNo == 1)
             {
                 WriteVerbose("Printing with margins: top=" + topEdge.ToString("0") + ", left=" + leftEdge.ToString("0") + ". " + System.Math.Truncate(linesPerPage).ToString() + " Lines per page");
             }
-            WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing text. Page " + currentPageNo + ", " + LinesToPrint.Count + " lines in the buffer")));
+            WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing text. Page " + CurrentPageNo + ", " + LinesToPrint.Count + " lines in the buffer")));
             // Print lines from 0..LinesPerPage -1 if we don't run out first
             while (linecount < linesPerPage && LinesToPrint.Count > linecount)
             {
@@ -181,7 +193,7 @@ namespace OutPrinter
             if (LinesToPrint.Count > 0)
             {
                 ev.HasMorePages = true;
-                currentPageNo++;
+                CurrentPageNo++;
             }
             else
             {
@@ -190,7 +202,7 @@ namespace OutPrinter
         }
         private void pd_PrintGraphic(object sender, System.Drawing.Printing.PrintPageEventArgs ev)
         {
-            WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing image. Page " + currentPageNo)));
+            WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing image. Page " + CurrentPageNo)));
 
             #region Figure out how the image should be scaled
             float ratio = 1;
@@ -204,7 +216,7 @@ namespace OutPrinter
                 bool FitToWidth = (Bitmap.Size.Width > Bitmap.Size.Height);
                 if ((Bitmap.Size.Width < ev.MarginBounds.Width) && (Bitmap.Size.Height < ev.MarginBounds.Height))
                 {
-                     
+
                     AdjustedImagesize = new System.Drawing.Size(Bitmap.Size.Width, Bitmap.Size.Height);
                 }
                 else
@@ -221,22 +233,23 @@ namespace OutPrinter
             System.Drawing.Rectangle recSrc = new System.Drawing.Rectangle(0, 0, Bitmap.Width, Bitmap.Height);
             ev.Graphics.DrawImage(Bitmap, recDest, recSrc, System.Drawing.GraphicsUnit.Pixel);
             Bitmap.Dispose();
-            currentPageNo++;
+            CurrentPageNo++;
             ev.HasMorePages = false;
         }
         #endregion
-        
+
         //Overrides for the begin,process,end and Stop! pscmdlet methods
         protected override void BeginProcessing()
         {
             base.BeginProcessing();
+            OriginalPrinterName = PrintDocument.PrinterSettings.PrinterName;
             #region Select printer, paper size and orientation 
             // We don't check the name is valid, if a bad name is passed this will cause an error which is what we want.
             if (null != PrinterName)
             {
                 PrintDocument.PrinterSettings.PrinterName = PrinterName;
             }
-            string layoutMsg = "Printing to '" + PrintDocument.PrinterSettings.PrinterName +"'";
+            string layoutMsg = "Printing to '" + PrintDocument.PrinterSettings.PrinterName + "'";
             if (null != Destination)
             {
                 Destination = this.GetUnresolvedProviderPathFromPSPath(Destination);
@@ -248,12 +261,13 @@ namespace OutPrinter
                 PrintDocument.PrinterSettings.PrintFileName = Destination;
                 layoutMsg = layoutMsg + " (" + Destination + ")";
             }
+            OriginalPaperPageSettings = PrintDocument.DefaultPageSettings;
             if (null != PaperSize)
             {  // There is probably a neater way do "is PaperSize in the list of PaperSize Kinds" using linq
                 bool FoundSize = false;
                 foreach (System.Drawing.Printing.PaperSize ps in PrintDocument.PrinterSettings.PaperSizes)
                 {
-                    if (string.Equals(ps.Kind.ToString() , PaperSize, StringComparison.CurrentCultureIgnoreCase))
+                    if (string.Equals(ps.Kind.ToString(), PaperSize, StringComparison.CurrentCultureIgnoreCase))
                     {
                         FoundSize = true;
                         PrintDocument.DefaultPageSettings.PaperSize = ps;
@@ -281,7 +295,7 @@ namespace OutPrinter
             // area has X,Y of top left corner, width and height.  Min top/left margins set by X & Y;
             // min bottom is  paperHeight - Y - printable height ; min right margin is paperWdith - x - printable width
             //  if margin passed > min we set that, between zero and Min we set the min value, below zero tells us nothing was passed. 
-            
+
             if (TopMargin > PrintDocument.DefaultPageSettings.PrintableArea.Y)
             {
                 PrintDocument.DefaultPageSettings.Margins.Top = TopMargin;
@@ -348,9 +362,9 @@ namespace OutPrinter
             PrintFont = new System.Drawing.Font(FontName, FontSize);
 
             //Page size is hundreths of an inch. Font is points, 120 points to inch, so page 1.2 is width in points. 
-            widthInChars = (int)Math.Truncate(WidthInHundreths * 1.2 / PrintFont.Size);
-            
-            WriteVerbose("Font is " + PrintFont.Name + " " + PrintFont.Size + "-point. Print area is " + (HeightInHundreths / 100).ToString("0.00") + "inches tall X " + (WidthInHundreths / 100).ToString("0.00") + "inches wide = " + widthInChars.ToString("0") + "chars");            
+            WidthInChars = (int)Math.Truncate(WidthInHundreths * 1.2 / PrintFont.Size);
+
+            WriteVerbose("Font is " + PrintFont.Name + " " + PrintFont.Size + "-point. Print area is " + (HeightInHundreths / 100).ToString("0.00") + "inches tall X " + (WidthInHundreths / 100).ToString("0.00") + "inches wide = " + WidthInChars.ToString("0") + "chars");
             #endregion
         }
         protected override void ProcessRecord()
@@ -370,12 +384,12 @@ namespace OutPrinter
                 }
                 else
                 {
-                    WriteWarning("Can't open file '" + Path +"'." );
+                    WriteWarning("Can't open file '" + Path + "'.");
                 }
             }
             #endregion
             #region Collect data based in InputObject (i.e. piped) special treatment for a bitmap 
-            else if(null != InputObject)
+            else if (null != InputObject)
             {
                 if (InputObject.BaseObject is System.Drawing.Bitmap)
                 {
@@ -403,29 +417,30 @@ namespace OutPrinter
             {
                 //Most of the work happens in the Print-a-page event-handler ...
                 PrintDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd_PrintGraphic);
-                PrintDocument.Print(); 
+                PrintDocument.Print();
             }
             #endregion
         }
         protected override void EndProcessing()
         {
-            base.EndProcessing();
             #region Print text
             if ((ThingsToPrint.Count > 0))
             {
                 WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), "Renderding text"));
                 // I think there must be a better way ( using Microsoft.PowerShell.Commands.OutStringCommand ? ) 
-                PowerShell ps = PowerShell.Create();
+                System.Management.Automation.PowerShell ps = PowerShell.Create();
                 ps.AddCommand("Out-String");
                 ps.AddParameter("InputObject", ThingsToPrint);
-                ps.AddParameter("Width", widthInChars);
+                ps.AddParameter("Width", WidthInChars);
                 ps.AddParameter("Stream");
-                foreach (PSObject O in ps.Invoke()) {
+                foreach (PSObject O in ps.Invoke())
+                {
                     LinesToPrint.Add(O.ToString());
                 }
+                ps.Dispose();
             }
             if (LinesToPrint.Count > 0)
-            { 
+            {
                 WriteVerbose(LinesToPrint.Count.ToString() + " Lines to print.");
                 //All work gets done by the event handler for "print page" events
                 PrintDocument.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd_PrintText);
@@ -444,12 +459,122 @@ namespace OutPrinter
                         }
                     }.Start();
             }
-            #endregion  
+            #endregion 
+            //Restore printer settings 
+            PrintDocument.DefaultPageSettings = OriginalPaperPageSettings;
+            PrintDocument.PrinterSettings.PrinterName = OriginalPrinterName;
             PrintDocument.Dispose();
+            base.EndProcessing();
         }
         protected override void StopProcessing()
         {
+            //Restore printer settings 
+            PrintDocument.DefaultPageSettings = OriginalPaperPageSettings;
+            PrintDocument.PrinterSettings.PrinterName = OriginalPrinterName;
             PrintDocument.Dispose();
+            base.StopProcessing();
+        }
+    }
+    
+    //Powershell includes CIM commands for getting printers but not for finding or changing the default one. 
+    //Easy to get the name and/or settings but we want a CIM object to be able to pass it into the other printer commands.
+    //For setting we need a dll import...  
+    [Cmdlet(VerbsCommon.Get, "DefaultPrinter"),OutputType("Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/MSFT_Printer")]
+    public class GetDefaultPrinterCommand : PSCmdlet
+    {
+        //no Parameters and only has one property. 
+        private readonly System.Drawing.Printing.PrintDocument PrintDocument = new System.Drawing.Printing.PrintDocument();
+        //Overrides for the begin,process,end and Stop! pscmdlet methods
+        protected override void BeginProcessing() {
+            base.BeginProcessing();
+        }
+        protected override void ProcessRecord()
+        {
+            base.ProcessRecord();
+        }
+        protected override void EndProcessing() {
+            PowerShell ps = PowerShell.Create();
+            ps.AddCommand("Get-CimInstance");
+            ps.AddParameter("Namespace", "Root/StandardCimv2");
+            ps.AddParameter("Query", ("Select * from MSFT_Printer Where Name = '" + PrintDocument.PrinterSettings.PrinterName + "'"));
+            foreach (PSObject O_O in ps.Invoke())
+            {
+                WriteObject(O_O);
+            }
+            ps.Dispose();
+            PrintDocument.Dispose();
+            base.EndProcessing();
+        }
+        protected override void StopProcessing()
+        {
+            base.StopProcessing();
+        }
+    }
+    
+    [Cmdlet(VerbsCommon.Set, "DefaultPrinter"), OutputType("Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/MSFT_Printer")]
+    public class SetDefaultPrinterCommand : PSCmdlet
+    {
+        #region Param() block.
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true), ArgumentCompleter(typeof(PrinterNameCompleter))]
+        [Alias("Name")]
+        public PSObject Printer { get; set; }
+
+        [Parameter()]
+        [Alias("Show")]
+        public SwitchParameter Passthru { get; set; }
+        #endregion
+
+        private class InteropPrinters
+        {
+            [DllImport("winspool.drv", CharSet = CharSet.Auto, SetLastError = true)]
+            public static extern bool SetDefaultPrinter(string name);
+        }
+        //Overrides for the begin,process,end and Stop! pscmdlet methods
+
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+        }
+        protected override void ProcessRecord()
+        {
+            base.ProcessRecord();
+        }
+        protected override void EndProcessing()
+        {
+            bool result = false; 
+            if (Printer.BaseObject is string)
+            {
+                WriteVerbose("Setting default printer to '" + Printer.BaseObject.ToString() + "'");
+                result = InteropPrinters.SetDefaultPrinter(Printer.BaseObject.ToString());
+            }
+            else if (Printer.Properties["Name"] != null )
+            {
+                WriteVerbose("Setting default printer to '" + Printer.Properties["Name"].Value.ToString() + "'");
+                result = InteropPrinters.SetDefaultPrinter(Printer.Properties["Name"].Value.ToString());
+            }
+            else if (Printer.Properties["PrinterName"] != null)
+            {
+                WriteVerbose("Setting default printer to '" + Printer.Properties["PrinterName"].Value.ToString() + "'");
+                result = InteropPrinters.SetDefaultPrinter(Printer.Properties["PrinterName"].Value.ToString());
+            }
+            if (!result) { WriteWarning("Could not set the printer"); }
+            if (Passthru) {
+                System.Drawing.Printing.PrintDocument pd = new System.Drawing.Printing.PrintDocument();
+                PowerShell ps = PowerShell.Create();
+                ps.AddCommand("Get-CimInstance");
+                ps.AddParameter("Namespace", "Root/StandardCimv2");
+                ps.AddParameter("Query", ("Select * from MSFT_Printer Where Name = '" + pd.PrinterSettings.PrinterName + "'"));
+                foreach (PSObject O_O in ps.Invoke())
+                {
+                    WriteObject(O_O);
+                }
+                ps.Dispose();
+                pd.Dispose();
+            }
+            base.EndProcessing();
+        }
+        protected override void StopProcessing()
+        {
             base.StopProcessing();
         }
     }

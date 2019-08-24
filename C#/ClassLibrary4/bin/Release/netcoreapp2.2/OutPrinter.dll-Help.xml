@@ -2,6 +2,79 @@
 <helpItems schema="maml" xmlns="http://msh">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Get-DefaultPrinter</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>DefaultPrinter</command:noun>
+      <maml:description>
+        <maml:para>Returns an object reflecting the default printer on the the local computer</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The PrintManagement CIM module included with PowerShell does not provide a way
+to discover the default printer. This command adds one, returning an object which
+can be piped into, for example, the Get-PrintConfiguration Command from PrintManagement.
+Note that Print ManagementProvides formatting for MSFT_Printer CIM objects, which this
+command returns. Its output will be displayed differently depending on whether that
+module is loaded or not.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-DefaultPrinter</maml:name>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/MSFT_Printer</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; (Get-DefaultPrinter).Name</dev:code>
+        <dev:remarks>
+          <maml:para>Displays just the name of the default printer</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-DefaultPrinter | Get-PrintConfiguration</dev:code>
+        <dev:remarks>
+          <maml:para>Gets the default printer, and returns its configuration</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-DefaultPrinter | Set-PrintConfiguration -PaperSize Letter</dev:code>
+        <dev:remarks>
+          <maml:para>Gets the default printer, and sets the paper size to US Letter</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Out-Printer</command:name>
       <command:verb>Out</command:verb>
       <command:noun>Printer</command:noun>
@@ -13,20 +86,20 @@
       <maml:para>Out-Printer sends output to the default printer or to an alternate printer,
 if one is specified. Font, paper-orientation, paper-size, and margins can all
 be set, and page numbers can be requested.
-Content can be piped into the command, optionally using its alias LP to give a
-Unix like | lp, or it can take the path to a text or image file as a parameter.
-If input is piped to the command it attempts to apply default formatting and
-wraps text to fit the page size. If text is read from a file is is sent "as-is".
-When using Print to PDF or similar output-to-file type printers, the file name
+Content can be piped into the command, optionally using its alias 'lp' to give
+a Unix like | lp, or it can take the path to a text or image file as a parameter.
+If input is piped to the command it attempts to apply default formatting and to
+wrap text to fit the page size, but text read from a file is printed "as-is".
+When using Print to PDF or similar output-to-file printers, the file name
 can be specified, and if it is, the file can be opened in its default viewer.
 There is an option to add page numbers which are positioned at the top of text
 pages (not image ones), if there is not sufficient border for the page number,
 the top of the printing area is moved down to avoid overlap.
-When setting margins, be aware that Windows works in hundredths of an inch
-when dealing with paper sizes, font sizes are in points - 1pt = 1/120th inch
-- so inch-based is not as stupid as it might sound. If you are working in mm
-for borders multiply by 4 for an easy conversion, or divide by 0.254 for
-a more accurate one.</maml:para>
+When setting margins, be aware that Windows specifies paper dimensions in
+hundredths of an inch font sizes are in points - 1pt = 1/120th inch -so
+inch-based makes more sense here than in other places.
+If you are working in mm, multiplying by 4 converts to hundredths accurately
+enough for most margins. (For absolute accuracy divide by 0.254)</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -58,7 +131,8 @@ a more accurate one.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>PaperSize</maml:name>
           <maml:Description>
-            <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter)</maml:para>
+            <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter).
+Some printers have been observed to have issues setting the size.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -70,7 +144,9 @@ a more accurate one.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="Font">
           <maml:name>FontName</maml:name>
           <maml:Description>
-            <maml:para>Typeface to use, e.g. Calibri, Arial, Consolas, "Courier New" (defaults to "Lucida Console")</maml:para>
+            <maml:para>Typeface to use, e.g. Consolas, "Courier New" (defaults to "Lucida Console").
+Non-proportionally spaced fonts will often work better, but no check is done
+to prevent the use of Comic Sans.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -82,7 +158,7 @@ a more accurate one.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="Size">
           <maml:name>FontSize</maml:name>
           <maml:Description>
-            <maml:para>Size of font, defaults to 10 point</maml:para>
+            <maml:para>Size of font, defaults to 10 point.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -94,8 +170,8 @@ a more accurate one.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="PrintFileName">
           <maml:name>Destination</maml:name>
           <maml:Description>
-            <maml:para>Specifies the name of a file to print to so that PDF etc. don't require input.
-If the file already exists it will be overwritten.</maml:para>
+            <maml:para>Specifies the name of a file to print to so that Print to PDF and similar drivers
+do not require user input. If the file already exists it will be overwritten.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -108,7 +184,7 @@ If the file already exists it will be overwritten.</maml:para>
           <maml:name>BottomMargin</maml:name>
           <maml:Description>
             <maml:para>Bottom Margin in units of 1/100th inch.
-Zero will be converted to minimum margin</maml:para>
+Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -131,7 +207,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>LeftMargin</maml:name>
           <maml:Description>
-            <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -143,7 +219,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoImageScale</maml:name>
           <maml:Description>
-            <maml:para>Disable scaling of images - by default images are scaled to fill the page</maml:para>
+            <maml:para>Disable scaling of images - by default images ARE scaled to fill the page.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -154,7 +230,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NumberPages</maml:name>
           <maml:Description>
-            <maml:para>f specified page numbers will be added at the top of the page.</maml:para>
+            <maml:para>If specified page numbers will be added at the top of the page.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -165,7 +241,8 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Show:">
           <maml:name>OpenDestinationFile</maml:name>
           <maml:Description>
-            <maml:para>If specified opens the print file after printing (ignored if the destination file is not specified)</maml:para>
+            <maml:para>If specified, the print is opened file after printing.
+If the destination file is not specified, this value is ignored.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -176,7 +253,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>RightMargin</maml:name>
           <maml:Description>
-            <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -188,7 +265,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>TopMargin</maml:name>
           <maml:Description>
-            <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to the minimum margin</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -228,7 +305,8 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>PaperSize</maml:name>
           <maml:Description>
-            <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter)</maml:para>
+            <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter).
+Some printers have been observed to have issues setting the size.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -240,7 +318,9 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="Font">
           <maml:name>FontName</maml:name>
           <maml:Description>
-            <maml:para>Typeface to use, e.g. Calibri, Arial, Consolas, "Courier New" (defaults to "Lucida Console")</maml:para>
+            <maml:para>Typeface to use, e.g. Consolas, "Courier New" (defaults to "Lucida Console").
+Non-proportionally spaced fonts will often work better, but no check is done
+to prevent the use of Comic Sans.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -252,7 +332,7 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="Size">
           <maml:name>FontSize</maml:name>
           <maml:Description>
-            <maml:para>Size of font, defaults to 10 point</maml:para>
+            <maml:para>Size of font, defaults to 10 point.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -264,8 +344,8 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="PrintFileName">
           <maml:name>Destination</maml:name>
           <maml:Description>
-            <maml:para>Specifies the name of a file to print to so that PDF etc. don't require input.
-If the file already exists it will be overwritten.</maml:para>
+            <maml:para>Specifies the name of a file to print to so that Print to PDF and similar drivers
+do not require user input. If the file already exists it will be overwritten.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -278,7 +358,7 @@ If the file already exists it will be overwritten.</maml:para>
           <maml:name>BottomMargin</maml:name>
           <maml:Description>
             <maml:para>Bottom Margin in units of 1/100th inch.
-Zero will be converted to minimum margin</maml:para>
+Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -301,7 +381,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>LeftMargin</maml:name>
           <maml:Description>
-            <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -313,7 +393,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoImageScale</maml:name>
           <maml:Description>
-            <maml:para>Disable scaling of images - by default images are scaled to fill the page</maml:para>
+            <maml:para>Disable scaling of images - by default images ARE scaled to fill the page.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -324,7 +404,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NumberPages</maml:name>
           <maml:Description>
-            <maml:para>f specified page numbers will be added at the top of the page.</maml:para>
+            <maml:para>If specified page numbers will be added at the top of the page.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -335,7 +415,8 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Show:">
           <maml:name>OpenDestinationFile</maml:name>
           <maml:Description>
-            <maml:para>If specified opens the print file after printing (ignored if the destination file is not specified)</maml:para>
+            <maml:para>If specified, the print is opened file after printing.
+If the destination file is not specified, this value is ignored.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -346,7 +427,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>RightMargin</maml:name>
           <maml:Description>
-            <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -358,7 +439,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>TopMargin</maml:name>
           <maml:Description>
-            <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to the minimum margin</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -397,7 +478,8 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>PaperSize</maml:name>
           <maml:Description>
-            <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter)</maml:para>
+            <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter).
+Some printers have been observed to have issues setting the size.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -409,8 +491,8 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="PrintFileName">
           <maml:name>Destination</maml:name>
           <maml:Description>
-            <maml:para>Specifies the name of a file to print to so that PDF etc. don't require input.
-If the file already exists it will be overwritten.</maml:para>
+            <maml:para>Specifies the name of a file to print to so that Print to PDF and similar drivers
+do not require user input. If the file already exists it will be overwritten.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -423,7 +505,7 @@ If the file already exists it will be overwritten.</maml:para>
           <maml:name>BottomMargin</maml:name>
           <maml:Description>
             <maml:para>Bottom Margin in units of 1/100th inch.
-Zero will be converted to minimum margin</maml:para>
+Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -446,7 +528,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>LeftMargin</maml:name>
           <maml:Description>
-            <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -458,7 +540,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoImageScale</maml:name>
           <maml:Description>
-            <maml:para>Disable scaling of images - by default images are scaled to fill the page</maml:para>
+            <maml:para>Disable scaling of images - by default images ARE scaled to fill the page.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -469,7 +551,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NumberPages</maml:name>
           <maml:Description>
-            <maml:para>f specified page numbers will be added at the top of the page.</maml:para>
+            <maml:para>If specified page numbers will be added at the top of the page.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -480,7 +562,8 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Show:">
           <maml:name>OpenDestinationFile</maml:name>
           <maml:Description>
-            <maml:para>If specified opens the print file after printing (ignored if the destination file is not specified)</maml:para>
+            <maml:para>If specified, the print is opened file after printing.
+If the destination file is not specified, this value is ignored.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -491,7 +574,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>RightMargin</maml:name>
           <maml:Description>
-            <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -503,7 +586,7 @@ Zero will be converted to minimum margin</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>TopMargin</maml:name>
           <maml:Description>
-            <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+            <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to the minimum margin</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -519,7 +602,7 @@ Zero will be converted to minimum margin</maml:para>
         <maml:name>BottomMargin</maml:name>
         <maml:Description>
           <maml:para>Bottom Margin in units of 1/100th inch.
-Zero will be converted to minimum margin</maml:para>
+Zero will be converted to the minimum margin.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -531,8 +614,8 @@ Zero will be converted to minimum margin</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="PrintFileName">
         <maml:name>Destination</maml:name>
         <maml:Description>
-          <maml:para>Specifies the name of a file to print to so that PDF etc. don't require input.
-If the file already exists it will be overwritten.</maml:para>
+          <maml:para>Specifies the name of a file to print to so that Print to PDF and similar drivers
+do not require user input. If the file already exists it will be overwritten.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -544,7 +627,9 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="Font">
         <maml:name>FontName</maml:name>
         <maml:Description>
-          <maml:para>Typeface to use, e.g. Calibri, Arial, Consolas, "Courier New" (defaults to "Lucida Console")</maml:para>
+          <maml:para>Typeface to use, e.g. Consolas, "Courier New" (defaults to "Lucida Console").
+Non-proportionally spaced fonts will often work better, but no check is done
+to prevent the use of Comic Sans.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -556,7 +641,7 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="Size">
         <maml:name>FontSize</maml:name>
         <maml:Description>
-          <maml:para>Size of font, defaults to 10 point</maml:para>
+          <maml:para>Size of font, defaults to 10 point.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -604,7 +689,7 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>LeftMargin</maml:name>
         <maml:Description>
-          <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+          <maml:para>Left Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -616,7 +701,7 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>NoImageScale</maml:name>
         <maml:Description>
-          <maml:para>Disable scaling of images - by default images are scaled to fill the page</maml:para>
+          <maml:para>Disable scaling of images - by default images ARE scaled to fill the page.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -628,7 +713,7 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>NumberPages</maml:name>
         <maml:Description>
-          <maml:para>f specified page numbers will be added at the top of the page.</maml:para>
+          <maml:para>If specified page numbers will be added at the top of the page.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -640,7 +725,8 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Show:">
         <maml:name>OpenDestinationFile</maml:name>
         <maml:Description>
-          <maml:para>If specified opens the print file after printing (ignored if the destination file is not specified)</maml:para>
+          <maml:para>If specified, the print is opened file after printing.
+If the destination file is not specified, this value is ignored.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -652,7 +738,8 @@ If the file already exists it will be overwritten.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
         <maml:name>PaperSize</maml:name>
         <maml:Description>
-          <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter)</maml:para>
+          <maml:para>Name of a paper-size on the selected printer (e.g A4, Letter).
+Some printers have been observed to have issues setting the size.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -689,7 +776,7 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>RightMargin</maml:name>
         <maml:Description>
-          <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+          <maml:para>Right Margin in units of 1/100th inch. Zero will be converted to the minimum margin.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -701,7 +788,7 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>TopMargin</maml:name>
         <maml:Description>
-          <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to minimum margin</maml:para>
+          <maml:para>Top Margin in units of 1/100th inch. Zero will be converted to the minimum margin</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -739,7 +826,7 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; get-help out-printer | Out-Printer</dev:code>
+        <dev:code>PS C:\&gt; Get-Help Out-Printer | Out-Printer</dev:code>
         <dev:remarks>
           <maml:para>Sends this help to the default printer using the default settings.</maml:para>
         </dev:remarks>
@@ -749,10 +836,10 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
         <dev:code>PS C:\&gt; dir | Out-Printer -PrinterName 'Microsoft Print to PDF' -PrintFileName .\files.pdf -LeftMargin 50 -Verbose</dev:code>
         <dev:remarks>
           <maml:para>Sends a directory listing to the 'Microsoft Print to PDF' printer.
-If the file name is not specified, a dialog will appear, but in this case "files.pdf"
-is passed from the command line.
-The print will a left margin of 0.50 inches, using the default paper-size in portrait format,
-with the default typeface and font size.
+If the file name is not specified, a dialog will appear, but in this case
+"files.pdf" is passed from the command line.
+The print will a have left margin of 0.50 inches, using the default paper-size
+in portrait format, with the default typeface and font size.
 Verbose output will show the printer name, file name, and paper size.
 </maml:para>
         </dev:remarks>
@@ -761,8 +848,8 @@ Verbose output will show the printer name, file name, and paper size.
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Out-Printer -Path .\Out-Printer.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9</dev:code>
         <dev:remarks>
-          <maml:para>Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named "listing.pdf".
-Here the printing is rotated to LandScape and A3 size paper is used.
+          <maml:para>Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named
+"listing.pdf". Here the printing is rotated to LandScape and the page is size to A3.
 The font uses the Calibri typeface set in 9 point size.
 </maml:para>
         </dev:remarks>
@@ -771,8 +858,8 @@ The font uses the Calibri typeface set in 9 point size.
         <maml:title>-------------------------- Example 4 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Out-Printer -Verbose -ImagePath .\lewis.jpg  -LandScape</dev:code>
         <dev:remarks>
-          <maml:para>Sends a Picture to the default printer, printing in Landscape mode.
-Specifying verbose will give information on the scaling applied.</maml:para>
+          <maml:para>Sends a picture to the default printer, printing in Landscape mode.
+Specifying -Verbose will give information on the scaling applied.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -788,9 +875,9 @@ The page margins are customized and font reduced to fit on the page.
         <maml:title>-------------------------- Example 6 --------------------------</maml:title>
         <dev:code>PS C:\&gt; dir | lp  -Dest C:\Users\mcp\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open</dev:code>
         <dev:remarks>
-          <maml:para>This Example adds page numbers, but also uses the alias lp ; FontName can be shortened to
-Font, FontSize to size and "margin" omitted from each of the four margin parameters.
-NumberPages and OpenDestinationFile can also be shortened.
+          <maml:para>This Example adds page numbers, but also uses the alias lp ; FontName can be shortened
+to Font, FontSize to size and "margin" omitted from each of the four margin parameters.
+The instructions to NumberPages and OpenDestinationFile can also be shortened.
 </maml:para>
         </dev:remarks>
       </command:example>
@@ -801,5 +888,134 @@ NumberPages and OpenDestinationFile can also be shortened.
         <maml:uri>https://github.com/jhoneill/6Print</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Set-DefaultPrinter</command:name>
+      <command:verb>Set</command:verb>
+      <command:noun>DefaultPrinter</command:noun>
+      <maml:description>
+        <maml:para>Sets the default printer.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The PrintManagement CIM module included with PowerShell does not provide a way to
+set the default printer. This command adds one, and if -PassThru is specified,
+the selected printer is returned as a CIM object which can be used with the
+commands in the PrintManagement module.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Set-DefaultPrinter</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="Name">
+          <maml:name>Printer</maml:name>
+          <maml:Description>
+            <maml:para>A printer name or object. If this is a string, it must exactly match one of the
+printer names returned by Get-Printer. Wildcards are NOT supported.
+If it is an object, it must have a Name or PrinterName property which matches.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+          <dev:type>
+            <maml:name>PSObject</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Show">
+          <maml:name>Passthru</maml:name>
+          <maml:Description>
+            <maml:para>If specified, an object representing the selected printer will be returned,
+otherwise the command runs silently.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="Name">
+        <maml:name>Printer</maml:name>
+        <maml:Description>
+          <maml:para>A printer name or object. If this is a string, it must exactly match one of the
+printer names returned by Get-Printer. Wildcards are NOT supported.
+If it is an object, it must have a Name or PrinterName property which matches.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+        <dev:type>
+          <maml:name>PSObject</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Show">
+        <maml:name>Passthru</maml:name>
+        <maml:Description>
+          <maml:para>If specified, an object representing the selected printer will be returned,
+otherwise the command runs silently.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/MSFT_Printer</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Set-DefaultPrinter 'Brother HL-1110 series' -Passthru | Set-PrintConfiguration -PaperSize A4</dev:code>
+        <dev:remarks>
+          <maml:para>Sets the default printer, and then sets its paper size to DIN A4
+</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-Printer *PDF | Set-DefaultPrinter</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the "Microsoft Print To PDF" printer and Makes it the default printer
+</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; get-printer | where {$_.drivername -notmatch "microsoft" -AND (Get-PrintConfiguration $_).color}  | Set-DefaultPrinter</dev:code>
+        <dev:remarks>
+          <maml:para>Finds a color printer excluding the Onenote, PDF and XPS drivers which have
+"Microsoft" in their names, printer and Makes it the default printer.  (If more than one driver matches these criteria the last one "wins". )
+</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks />
   </command:command>
 </helpItems>
