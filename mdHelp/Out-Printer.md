@@ -53,6 +53,7 @@ Out-Printer [-ImagePath] <String> [[-PrinterName] <String>] [[-PaperSize] <Strin
   inch-based makes more sense here than in other places.     
   If you are working in mm, multiplying by 4 converts to hundredths accurately    
   enough for most margins. (For absolute accuracy divide by 0.254)
+
 ## EXAMPLES
 
 ### Example 1
@@ -76,7 +77,7 @@ Verbose output will show the printer name, file name, and paper size.
 
 ### Example 3
 ```powershell
-PS C:\> Out-Printer -Path .\Out-Printer.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9
+PS C:\> Out-Printer -Path .\6Print.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9
 ```
 
 Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named    
@@ -101,7 +102,7 @@ The page margins are customized and font reduced to fit on the page.
 
 ### Example 6
 ```powershell
-PS C:\> dir | lp  -Dest C:\Users\mcp\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open
+PS C:\> dir | lp  -Dest ~\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open
 ```
 
 This Example adds page numbers, but also uses the alias lp ; FontName can be shortened   

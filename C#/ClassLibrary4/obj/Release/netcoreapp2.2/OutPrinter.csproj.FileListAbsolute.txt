@@ -15,4 +15,3 @@ C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\
 C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.AssemblyInfo.cs
 C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.dll
 C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.pdb
-C:\Users\mcp\Documents\GitHub\6Print\C#\ClassLibrary4\obj\Release\netcoreapp2.2\OutPrinter.csprojAssemblyReference.cache

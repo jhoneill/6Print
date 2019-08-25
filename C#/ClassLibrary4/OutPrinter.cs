@@ -146,7 +146,7 @@ namespace OutPrinter
         //Store the printer name so it can be restored at the end.
         private string OriginalPrinterName;
         //Store the page settings so they can be restored at the end.
-        private System.Drawing.Printing.PageSettings OriginalPaperPageSettings;
+        private System.Drawing.Printing.PageSettings OriginalPageSettings;
         //The font that we use for the printing. 
         private System.Drawing.Font PrintFont;
         //Width of the page - this is calculated when the the parameters are set in BEGIN, and used by Out-String in the END block
@@ -164,6 +164,7 @@ namespace OutPrinter
             float topEdge = ev.MarginBounds.Top;
             float yPos = 0;
             int linecount = 0;
+            WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing text. Page " + CurrentPageNo + ", " + LinesToPrint.Count + " lines in the buffer")));
             if (NumberPages)
             {
                 string PageLabel = "Page -- " + CurrentPageNo.ToString();
@@ -177,9 +178,8 @@ namespace OutPrinter
             }
             if (CurrentPageNo == 1)
             {
-                WriteVerbose("Printing with margins: top=" + topEdge.ToString("0") + ", left=" + leftEdge.ToString("0") + ". " + System.Math.Truncate(linesPerPage).ToString() + " Lines per page");
+                WriteVerbose("Printing with margins: top=" + topEdge.ToString("0") + ", left=" + leftEdge.ToString("0") + ". " + System.Math.Truncate(linesPerPage).ToString() + " lines per page");
             }
-            WriteProgress(new ProgressRecord(1, ("Printing to " + PrintDocument.PrinterSettings.PrinterName), ("Printing text. Page " + CurrentPageNo + ", " + LinesToPrint.Count + " lines in the buffer")));
             // Print lines from 0..LinesPerPage -1 if we don't run out first
             while (linecount < linesPerPage && LinesToPrint.Count > linecount)
             {
@@ -245,6 +245,8 @@ namespace OutPrinter
             OriginalPrinterName = PrintDocument.PrinterSettings.PrinterName;
             #region Select printer, paper size and orientation 
             // We don't check the name is valid, if a bad name is passed this will cause an error which is what we want.
+            //TODO XXXX  Could allow a Printer object instead of the name as a string (ditto paper size)
+            //           but these aren't piped in it is not asking too much to say "pass the .Name property not the whole object"   XXXX 
             if (null != PrinterName)
             {
                 PrintDocument.PrinterSettings.PrinterName = PrinterName;
@@ -261,7 +263,7 @@ namespace OutPrinter
                 PrintDocument.PrinterSettings.PrintFileName = Destination;
                 layoutMsg = layoutMsg + " (" + Destination + ")";
             }
-            OriginalPaperPageSettings = PrintDocument.DefaultPageSettings;
+            OriginalPageSettings = PrintDocument.DefaultPageSettings;
             if (null != PaperSize)
             {  // There is probably a neater way do "is PaperSize in the list of PaperSize Kinds" using linq
                 bool FoundSize = false;
@@ -461,7 +463,7 @@ namespace OutPrinter
             }
             #endregion 
             //Restore printer settings 
-            PrintDocument.DefaultPageSettings = OriginalPaperPageSettings;
+            PrintDocument.DefaultPageSettings = OriginalPageSettings;
             PrintDocument.PrinterSettings.PrinterName = OriginalPrinterName;
             PrintDocument.Dispose();
             base.EndProcessing();
@@ -469,7 +471,7 @@ namespace OutPrinter
         protected override void StopProcessing()
         {
             //Restore printer settings 
-            PrintDocument.DefaultPageSettings = OriginalPaperPageSettings;
+            PrintDocument.DefaultPageSettings = OriginalPageSettings;
             PrintDocument.PrinterSettings.PrinterName = OriginalPrinterName;
             PrintDocument.Dispose();
             base.StopProcessing();

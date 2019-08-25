@@ -846,7 +846,7 @@ Verbose output will show the printer name, file name, and paper size.
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; Out-Printer -Path .\Out-Printer.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9</dev:code>
+        <dev:code>PS C:\&gt; Out-Printer -Path .\6Print.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9</dev:code>
         <dev:remarks>
           <maml:para>Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named
 "listing.pdf". Here the printing is rotated to LandScape and the page is size to A3.
@@ -873,7 +873,7 @@ The page margins are customized and font reduced to fit on the page.
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 6 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; dir | lp  -Dest C:\Users\mcp\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open</dev:code>
+        <dev:code>PS C:\&gt; dir | lp  -Dest ~\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open</dev:code>
         <dev:remarks>
           <maml:para>This Example adds page numbers, but also uses the alias lp ; FontName can be shortened
 to Font, FontSize to size and "margin" omitted from each of the four margin parameters.
