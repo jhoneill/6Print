@@ -1,5 +1,5 @@
 ---
-external help file: OutPrinter.dll-Help.xml
+external help file: OutPrinterCommand.dll-Help.xml
 Module Name: Out-Printer
 online version:
 schema: 2.0.0
@@ -77,28 +77,28 @@ Verbose output will show the printer name, file name, and paper size.
 
 ### Example 3
 ```powershell
-PS C:\> Out-Printer -Path .\6Print.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9
-```
-
-Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named    
-"listing.pdf". Here the printing is rotated to LandScape and the page is size to A3.    
-The font uses the Calibri typeface set in 9 point size.   
-
-### Example 4
-```powershell
 PS C:\> Out-Printer -Verbose -ImagePath .\lewis.jpg  -LandScape
 ```
 
 Sends a picture to the default printer, printing in Landscape mode.     
 Specifying -Verbose will give information on the scaling applied.
 
-### Example 5
+### Example 4
 ```powershell
-PS C:\> Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 
+PS C:\> Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 -PaperSize 'A3' 
 ```
 
 This time services are formatted as an auto-sized table, and sent to OneNote.   
 The page margins are customized and font reduced to fit on the page.   
+
+### Example 5
+```powershell
+PS C:\> Out-Printer -Path .\6Print.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9
+```
+
+Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named    
+"listing.pdf". Here the printing is rotated to LandScape and the page is size to A3.    
+The font uses the Calibri typeface set in 9 point size.   
 
 ### Example 6
 ```powershell

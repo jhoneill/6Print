@@ -13,6 +13,12 @@
             "cwd": "${file}"
         },
         {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+        {
             "type": "PowerShell",
             "request": "launch",
             "name": "PowerShell Launch Current File in Temporary Console",

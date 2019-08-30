@@ -1,0 +1,4 @@
+c#/bin/Debug/*
+c#/obj/Debug/*
+c#/obj/release/*
+c#/bin/debug/*

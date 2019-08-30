@@ -1,5 +1,5 @@
 ---
-external help file: OutPrinter.dll-Help.xml
+external help file: OutPrinterCommand.dll-Help.xml
 Module Name: OutPrinter
 online version:
 schema: 2.0.0
@@ -29,6 +29,7 @@ commands in the PrintManagement module.
 PS C:\> Set-DefaultPrinter 'Brother HL-1110 series' -Passthru | Set-PrintConfiguration -PaperSize A4 
 ```
 Sets the default printer, and then sets its paper size to DIN A4  
+Note that changing the printer configuration requires elevated permissions.
 
 ### Example 2
 ```powershell

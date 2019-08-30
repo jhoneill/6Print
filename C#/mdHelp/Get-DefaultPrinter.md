@@ -1,5 +1,5 @@
 ---
-external help file: OutPrinter.dll-Help.xml
+external help file: OutPrinterCommand.dll-Help.xml
 Module Name: OutPrinter
 online version:
 schema: 2.0.0
@@ -29,19 +29,20 @@ module is loaded or not.
 ```powershell
 PS C:\> (Get-DefaultPrinter).Name
 ```
-Displays just the name of the default printer
+Displays just the name of the default printer.
 
 ### Example 2
 ```powershell
 PS C:\> Get-DefaultPrinter | Get-PrintConfiguration
 ```
-Gets the default printer, and returns its configuration
+Gets the default printer, and returns its configuration.
 
 ### Example 3
 ```powershell
 PS C:\> Get-DefaultPrinter | Set-PrintConfiguration -PaperSize Letter
 ```
-Gets the default printer, and sets the paper size to US Letter
+Gets the default printer, and sets the paper size to US Letter. 
+Note that changing the printer configuration requires elevated permissions.
 
 ## PARAMETERS
 

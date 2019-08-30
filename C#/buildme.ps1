@@ -3,7 +3,8 @@ param (
     $GUID                 = 'b5fb75ca-9849-42c0-8aeb-101467e5c1e1',  #  ([guid]::NewGuid().Guid) -
     $PowerShellVersion    = "6.0",
     $CompatiblePSEditions = "Desktop",
-    [switch]$Release
+    [switch]$Release,
+    [switch]$Quick
 )
 Get-ChildItem *.csproj | ForEach-Object {
     $moduleName = $_.name -replace "\.csproj$",""
@@ -13,12 +14,17 @@ Get-ChildItem *.csproj | ForEach-Object {
     $TargetFramework = $pg.TargetFramework
     if ($Release) {
         dotnet build --configuration release
+        if (-not $?) {return}
         $path = ".\bin\release\$TargetFramework"
     }
     else {
         dotnet build
+        if (-not $?) {return}
         $path =".\bin\Debug\$TargetFramework"
+        Write-Host "Process ID for Debugging is $PID"
     }
+
+    if ($Quick) {return}
 
     if (Test-path -Path .\mdHelp -PathType Container  ) {
         New-ExternalHelp -Path .\mdHelp\ -OutputPath $path  -Force

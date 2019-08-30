@@ -9200,11 +9200,11 @@
   "project": {
     "version": "6.2.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mcp\\Documents\\GitHub\\OutPrinterCommand\\OutPrinterCommand.csproj",
+      "projectUniqueName": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\OutPrinterCommand.csproj",
       "projectName": "OutPrinterCommand",
-      "projectPath": "C:\\Users\\mcp\\Documents\\GitHub\\OutPrinterCommand\\OutPrinterCommand.csproj",
+      "projectPath": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\OutPrinterCommand.csproj",
       "packagesPath": "C:\\Users\\mcp\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mcp\\Documents\\GitHub\\OutPrinterCommand\\obj\\",
+      "outputPath": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

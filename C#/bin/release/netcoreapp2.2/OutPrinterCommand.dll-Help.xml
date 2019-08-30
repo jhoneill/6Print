@@ -53,21 +53,21 @@ module is loaded or not.</maml:para>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
         <dev:code>PS C:\&gt; (Get-DefaultPrinter).Name</dev:code>
         <dev:remarks>
-          <maml:para>Displays just the name of the default printer</maml:para>
+          <maml:para>Displays just the name of the default printer.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Get-DefaultPrinter | Get-PrintConfiguration</dev:code>
         <dev:remarks>
-          <maml:para>Gets the default printer, and returns its configuration</maml:para>
+          <maml:para>Gets the default printer, and returns its configuration.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Get-DefaultPrinter | Set-PrintConfiguration -PaperSize Letter</dev:code>
         <dev:remarks>
-          <maml:para>Gets the default printer, and sets the paper size to US Letter</maml:para>
+          <maml:para>Gets the default printer, and sets the paper size to US Letter.  Note that changing the printer configuration requires elevated permissions.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -846,16 +846,6 @@ Verbose output will show the printer name, file name, and paper size.
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; Out-Printer -Path .\6Print.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9</dev:code>
-        <dev:remarks>
-          <maml:para>Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named
-"listing.pdf". Here the printing is rotated to LandScape and the page is size to A3.
-The font uses the Calibri typeface set in 9 point size.
-</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>-------------------------- Example 4 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Out-Printer -Verbose -ImagePath .\lewis.jpg  -LandScape</dev:code>
         <dev:remarks>
           <maml:para>Sends a picture to the default printer, printing in Landscape mode.
@@ -863,11 +853,21 @@ Specifying -Verbose will give information on the scaling applied.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- Example 5 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8</dev:code>
+        <maml:title>-------------------------- Example 4 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 -PaperSize 'A3'</dev:code>
         <dev:remarks>
           <maml:para>This time services are formatted as an auto-sized table, and sent to OneNote.
 The page margins are customized and font reduced to fit on the page.
+</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 5 --------------------------</maml:title>
+        <dev:code>PS C:\&gt; Out-Printer -Path .\6Print.psd1 -PrinterName 'Microsoft Print to PDF' -Destination .\listing.pdf -Landscape -PaperSize a3 -FontName 'Calibri' -FontSize 9</dev:code>
+        <dev:remarks>
+          <maml:para>Sends a text file to the 'Microsoft Print to PDF' printer, creating a file named
+"listing.pdf". Here the printing is rotated to LandScape and the page is size to A3.
+The font uses the Calibri typeface set in 9 point size.
 </maml:para>
         </dev:remarks>
       </command:example>
@@ -995,7 +995,7 @@ otherwise the command runs silently.</maml:para>
         <dev:code>PS C:\&gt; Set-DefaultPrinter 'Brother HL-1110 series' -Passthru | Set-PrintConfiguration -PaperSize A4</dev:code>
         <dev:remarks>
           <maml:para>Sets the default printer, and then sets its paper size to DIN A4
-</maml:para>
+Note that changing the printer configuration requires elevated permissions.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
