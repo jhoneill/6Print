@@ -67,7 +67,8 @@ module is loaded or not.</maml:para>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Get-DefaultPrinter | Set-PrintConfiguration -PaperSize Letter</dev:code>
         <dev:remarks>
-          <maml:para>Gets the default printer, and sets the paper size to US Letter.  Note that changing the printer configuration requires elevated permissions.</maml:para>
+          <maml:para>Gets the default printer, and sets the paper size to US Letter.
+Note that changing the printer configuration requires elevated permissions.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -107,7 +108,8 @@ enough for most margins. (For absolute accuracy divide by 0.254)</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
           <maml:name>InputObject</maml:name>
           <maml:Description>
-            <maml:para>The content to be sent to the printer. This can be objects to print, or the target for piped objects.</maml:para>
+            <maml:para>The content to be sent to the printer.
+This can be objects to print, or the target for piped objects.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
           <dev:type>
@@ -119,7 +121,8 @@ enough for most margins. (For absolute accuracy divide by 0.254)</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Name">
           <maml:name>PrinterName</maml:name>
           <maml:Description>
-            <maml:para>Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used.</maml:para>
+            <maml:para>Name of printer - can specify either -Printer or -Name.
+If not specified, the default printer will be used.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -196,7 +199,7 @@ Zero will be converted to the minimum margin.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>LandScape</maml:name>
           <maml:Description>
-            <maml:para>By default printing is portrait, unless -Landscape is specified.</maml:para>
+            <maml:para>By default printing will be in portrait orientation, unless -Landscape is specified.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -293,7 +296,8 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Name">
           <maml:name>PrinterName</maml:name>
           <maml:Description>
-            <maml:para>Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used.</maml:para>
+            <maml:para>Name of printer - can specify either -Printer or -Name.
+If not specified, the default printer will be used.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -370,7 +374,7 @@ Zero will be converted to the minimum margin.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>LandScape</maml:name>
           <maml:Description>
-            <maml:para>By default printing is portrait, unless -Landscape is specified.</maml:para>
+            <maml:para>By default printing will be in portrait orientation, unless -Landscape is specified.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -466,7 +470,8 @@ If the destination file is not specified, this value is ignored.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Name">
           <maml:name>PrinterName</maml:name>
           <maml:Description>
-            <maml:para>Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used.</maml:para>
+            <maml:para>Name of printer - can specify either -Printer or -Name.
+If not specified, the default printer will be used.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -517,7 +522,7 @@ Zero will be converted to the minimum margin.</maml:para>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>LandScape</maml:name>
           <maml:Description>
-            <maml:para>By default printing is portrait, unless -Landscape is specified.</maml:para>
+            <maml:para>By default printing will be in portrait orientation, unless -Landscape is specified.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -665,7 +670,8 @@ to prevent the use of Comic Sans.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
         <maml:name>InputObject</maml:name>
         <maml:Description>
-          <maml:para>The content to be sent to the printer. This can be objects to print, or the target for piped objects.</maml:para>
+          <maml:para>The content to be sent to the printer.
+This can be objects to print, or the target for piped objects.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
         <dev:type>
@@ -677,7 +683,7 @@ to prevent the use of Comic Sans.</maml:para>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>LandScape</maml:name>
         <maml:Description>
-          <maml:para>By default printing is portrait, unless -Landscape is specified.</maml:para>
+          <maml:para>By default printing will be in portrait orientation, unless -Landscape is specified.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -764,7 +770,8 @@ Text read from a file is not be wrapped, to wrap text pipe the file into Out-Pri
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Name">
         <maml:name>PrinterName</maml:name>
         <maml:Description>
-          <maml:para>Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used.</maml:para>
+          <maml:para>Name of printer - can specify either -Printer or -Name.
+If not specified, the default printer will be used.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -994,7 +1001,7 @@ otherwise the command runs silently.</maml:para>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Set-DefaultPrinter 'Brother HL-1110 series' -Passthru | Set-PrintConfiguration -PaperSize A4</dev:code>
         <dev:remarks>
-          <maml:para>Sets the default printer, and then sets its paper size to DIN A4
+          <maml:para>Sets the default printer, and then sets its paper size to DIN A4.
 Note that changing the printer configuration requires elevated permissions.</maml:para>
         </dev:remarks>
       </command:example>
@@ -1002,7 +1009,7 @@ Note that changing the printer configuration requires elevated permissions.</mam
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
         <dev:code>PS C:\&gt; Get-Printer *PDF | Set-DefaultPrinter</dev:code>
         <dev:remarks>
-          <maml:para>Finds the "Microsoft Print To PDF" printer and Makes it the default printer
+          <maml:para>Finds the "Microsoft Print To PDF" printer and makes it the default printer.
 </maml:para>
         </dev:remarks>
       </command:example>
@@ -1011,7 +1018,8 @@ Note that changing the printer configuration requires elevated permissions.</mam
         <dev:code>PS C:\&gt; get-printer | where {$_.drivername -notmatch "microsoft" -AND (Get-PrintConfiguration $_).color}  | Set-DefaultPrinter</dev:code>
         <dev:remarks>
           <maml:para>Finds a color printer excluding the Onenote, PDF and XPS drivers which have
-"Microsoft" in their names, printer and Makes it the default printer.  (If more than one driver matches these criteria the last one "wins". )
+"Microsoft" in their names, printer and Makes it the default printer.
+(If more than one driver matches these criteria the last one "wins". )
 </maml:para>
         </dev:remarks>
       </command:example>

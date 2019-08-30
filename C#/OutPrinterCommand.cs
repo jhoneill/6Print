@@ -518,7 +518,7 @@ namespace OutPrinterCommand
         }
     }
     
-    [Cmdlet(VerbsCommon.Set, "DefaultPrinter"), OutputType("Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/MSFT_Printer")]
+    [Cmdlet(VerbsCommon.Set, "DefaultPrinter" , SupportsShouldProcess = true), OutputType("Microsoft.Management.Infrastructure.CimInstance#ROOT/StandardCimv2/MSFT_Printer")]
     public class SetDefaultPrinterCommand : PSCmdlet
     {
         #region Param() block.
@@ -559,15 +559,16 @@ namespace OutPrinterCommand
             {
                 PrinterName = Printer.Properties["PrinterName"].Value.ToString() ;
             }
-            if (PrinterName != string.Empty ) 
+            if (PrinterName != string.Empty  && ShouldProcess(PrinterName,"Set as default printer") ) 
             {
-                WriteVerbose(string.Format("Setting default printer to '{0}'.", PrinterName));
                 result = InteropPrinters.SetDefaultPrinter(PrinterName);
-            }            
-            if (!result) { 
-                WriteWarning(string.Format("Could not set the printer to '{0}'." ,PrinterName) ); 
-                return ;
+                if (!result) 
+                { 
+                    WriteWarning(string.Format("Could not set the printer to '{0}'." ,PrinterName) ); 
+                    return ;
+                }
             }
+            else {return;}
             if (Passthru)
             {
                 PrintDocument pd = new PrintDocument();
