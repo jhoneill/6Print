@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Authors>James O'Neill</Authors>
+    <Company>Mobula Consulting Ltd</Company>
+    <Copyright>Copyright James O'Neill 2019</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jhoneill/6Print</PackageProjectUrl>
+    <Version>6.2.0</Version>
+     <Description> 
+This Windows-Specific module add the Out-Printer functionality seen in Windows PowerShell 5 
+and earlier to V6 and later. It also has basic functionality to get and set the default printer.
+Out_printer takes input from the pipeline or a file and sends it to the default printer or to
+a specified one. The paper-size, orientation, margins, typeface and point size can all be set,
+and page numbers can be requested.
+Destination files for Print-to-file operations can be specified as a parameter,
+allowing "Print-to-pdf" functionality without the need for user input.
+</Description>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="6.2.2" />
+  </ItemGroup>
+
+</Project>
