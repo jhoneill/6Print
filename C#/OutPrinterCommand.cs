@@ -85,20 +85,22 @@ namespace OutPrinterCommand
     public class OutPrinterCommand : PSCmdlet
     {
         #region Param() block.
-        //Specifies the content to be sent to the printer. This can be objects to print, or the target for piped objects.
-        [Parameter(ValueFromPipeline = true, ParameterSetName = "Default", Position = 0)]
-        public PSObject InputObject { get; set; }
-        //Path of text file to be printed.
-        [Parameter(ParameterSetName = "TextPath", Position = 0, Mandatory = true)]
-        [Alias("FileName")]
-        public string Path { get; set; }
-        //Path to a BMP, GIF, JPEG, PNG or TIFF file to be printed.
-        [Parameter(ParameterSetName = "ImagePath", Position = 0, Mandatory = true)]
-        public string ImagePath { get; set; }
         //Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used
         [Parameter(Position = 1), ValidateSet(typeof(PrinterNameValidator), ErrorMessage = "'{0}' is not a valid printer on this computer.")] // ArgumentCompleter(typeof(PrinterNameCompleter))]
         [Alias("Name")]
         public string PrinterName { get; set; }
+        
+        //Specifies the content to be sent to the printer. This can be objects to print, or the target for piped objects.
+        [Parameter(ValueFromPipeline = true, ParameterSetName = "Default", Position = 1)]
+        public PSObject InputObject { get; set; }
+        //Path of text file to be printed.
+        [Parameter(ParameterSetName = "TextPath", Position =1 , Mandatory = true)]
+        [Alias("FileName")]
+        public string Path { get; set; }
+        //Path to a BMP, GIF, JPEG, PNG or TIFF file to be printed.
+        [Parameter(ParameterSetName = "ImagePath", Position = 1, Mandatory = true)]
+        public string ImagePath { get; set; }
+
         //Name of a paper-size on the selected printer (e.g A4, Letter)
         [Parameter(Position = 2), ArgumentCompleter(typeof(PaperSizeCompleter))]
         public string PaperSize { get; set; }
