@@ -41,7 +41,7 @@ Gets the default printer, and returns its configuration.
 ```powershell
 PS C:\> Get-DefaultPrinter | Set-PrintConfiguration -PaperSize Letter
 ```
-Gets the default printer, and sets the paper size to US Letter. 
+Gets the default printer, and sets the paper size to US Letter.    
 Note that changing the printer configuration requires elevated permissions.
 
 ## PARAMETERS

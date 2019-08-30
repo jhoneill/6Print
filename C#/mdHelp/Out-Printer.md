@@ -191,7 +191,8 @@ Accept wildcard characters: False
 ```
 
 ### -InputObject
-The content to be sent to the printer. This can be objects to print, or the target for piped objects.
+The content to be sent to the printer.     
+This can be objects to print, or the target for piped objects.
 
 ```yaml
 Type: PSObject
@@ -206,7 +207,7 @@ Accept wildcard characters: False
 ```
 
 ### -LandScape
-By default printing is portrait, unless -Landscape is specified.
+By default printing will be in portrait orientation, unless -Landscape is specified.
 
 ```yaml
 Type: SwitchParameter
@@ -314,7 +315,8 @@ Accept wildcard characters: False
 ```
 
 ### -PrinterName
-Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used.
+Name of printer - can specify either -Printer or -Name.     
+If not specified, the default printer will be used.
 
 ```yaml
 Type: String

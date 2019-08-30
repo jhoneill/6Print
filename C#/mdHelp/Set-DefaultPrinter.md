@@ -28,21 +28,21 @@ commands in the PrintManagement module.
 ```powershell
 PS C:\> Set-DefaultPrinter 'Brother HL-1110 series' -Passthru | Set-PrintConfiguration -PaperSize A4 
 ```
-Sets the default printer, and then sets its paper size to DIN A4  
+Sets the default printer, and then sets its paper size to DIN A4.  
 Note that changing the printer configuration requires elevated permissions.
 
 ### Example 2
 ```powershell
 PS C:\> Get-Printer *PDF | Set-DefaultPrinter
 ```
-Finds the "Microsoft Print To PDF" printer and Makes it the default printer   
+Finds the "Microsoft Print To PDF" printer and makes it the default printer.   
 
 ### Example 3
 ```powershell
 PS C:\> get-printer | where {$_.drivername -notmatch "microsoft" -AND (Get-PrintConfiguration $_).color}  | Set-DefaultPrinter 
 ```
 Finds a color printer excluding the Onenote, PDF and XPS drivers which have     
-"Microsoft" in their names, printer and Makes it the default printer. 
+"Microsoft" in their names, printer and Makes it the default printer.    
 (If more than one driver matches these criteria the last one "wins". )   
 
 ## PARAMETERS
