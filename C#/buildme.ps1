@@ -26,8 +26,10 @@ Get-ChildItem *.csproj | ForEach-Object {
 
 
     $path = "$path\$moduleName"
-    Remove-Item  "$path.deps.json" -ErrorAction SilentlyContinue
-    Remove-Item  "$path.pdb"       -ErrorAction SilentlyContinue
+    if ($Release) {
+        Remove-Item  "$path.deps.json" -ErrorAction SilentlyContinue
+        Remove-Item  "$path.pdb"       -ErrorAction SilentlyContinue
+    }
     Import-Module "$Path.dll"
     $CmdletsToExport = (Get-Command -Module $moduleName -CommandType Cmdlet).Name
     $AliasesToExport = (Get-Alias | Where-Object {$_.source -eq $moduleName}).Name
