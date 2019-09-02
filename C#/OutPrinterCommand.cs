@@ -175,7 +175,7 @@ namespace OutPrinterCommand
         //Unless wrapping is disabled, holds regex to wrap text at that width. 
         private Regex WrappingRegEx;
         //Used to preserve Multiple line breaks in the text. Matches on the point preceed by LF and followed by CR or LF. 
-        private Regex CrLfRegEx = new Regex("(?<=\\n)(?=\\r|\\n)");
+        private Regex BlankLineRegEx = new Regex("^$|(?<=\\n)(?=\\r|\\n)");
         
         //Used to track  the number of pages printed (may add an option to put the page number on the top of the page. 
         private int CurrentPageNo = 1;
@@ -452,7 +452,7 @@ namespace OutPrinterCommand
                     WriteVerbose(string.Format("Reading from {0}.",Path));
                     string text = System.IO.File.ReadAllText(Path) ;
                     //Convert any blank lines in the source text to spaces to stop split discarding them as empty   
-                    text = CrLfRegEx.Replace(text," ");
+                    text = BlankLineRegEx.Replace(text," ");
                     //If we are wrapping text use a predefined regex to make a long string into a multi-line string.
                     if (null != WrappingRegEx) {
                         text =  WrappingRegEx.Replace(text,"$1$2\n");
@@ -480,14 +480,12 @@ namespace OutPrinterCommand
                 else if (InputObject.BaseObject is string) {
                     //Convert any blank lines in the source text to spaces to stop split discarding them as empty   
                     //and if we are wrapping text, use a predefined regex to make a long string into a multi-line string.
-                    string text = "";
-                    if (null != WrappingRegEx) {
-                        text =  CrLfRegEx.Replace(InputObject.BaseObject.ToString()," ");
-                        text =  WrappingRegEx.Replace(text.ToString(),"$1$2\n");
+                    string text = BlankLineRegEx.Replace(InputObject.BaseObject.ToString()," ");
+                    if (text == "") {
+                        text = " ";
                     }
-                    else
-                    {
-                        text = CrLfRegEx.Replace(InputObject.BaseObject.ToString()," ");
+                    if (null != WrappingRegEx) {
+                        text =  WrappingRegEx.Replace(text.ToString(),"$1$2\n");
                     }
                     //Split a multi-line string of n lines into n strings and add them individually; 
                     //We may have a mix of objects so add them to "things to print" so the objects get formatted by out-string.
