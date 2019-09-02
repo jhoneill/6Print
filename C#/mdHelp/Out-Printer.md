@@ -1,6 +1,6 @@
 ---
 external help file: OutPrinterCommand.dll-Help.xml
-Module Name: Out-Printer
+Module Name: OutPrinterCommand
 online version:
 schema: 2.0.0
 ---
@@ -14,25 +14,25 @@ Sends output to a printer.
 
 ### Default (Default)
 ```
-Out-Printer [-InputObject] <PSObject> [[-PrinterName] <String>] [[-PaperSize] <String>] [[-FontName] <String>]
- [[-FontSize] <Int32>] [[-Destination] <String>] [-OpenDestinationFile] [-NumberPages] [-LandScape]
- [-TopMargin <Int32>] [-BottomMargin <Int32>] [-LeftMargin <Int32>] [-RightMargin <Int32>] [-NoImageScale]
- [<CommonParameters>]
+Out-Printer [[-PrinterName] <String>] [[-InputObject] <PSObject>] [[-PaperSize] <String>]
+ [[-FontName] <String>] [[-FontSize] <Int32>] [[-Destination] <String>] [-OpenDestinationFile]
+ [-Header <String>] [-Footer <String>] [-LandScape] [-TopMargin <Int32>] [-BottomMargin <Int32>]
+ [-LeftMargin <Int32>] [-RightMargin <Int32>] [-NoTextWrapping]  [<CommonParameters>]
 ```
 
 ### TextPath
 ```
-Out-Printer [-Path] <String> [[-PrinterName] <String>] [[-PaperSize] <String>] [[-FontName] <String>]
- [[-FontSize] <Int32>] [[-Destination] <String>] [-OpenDestinationFile] [-NumberPages] [-LandScape]
- [-TopMargin <Int32>] [-BottomMargin <Int32>] [-LeftMargin <Int32>] [-RightMargin <Int32>] [-NoImageScale]
- [<CommonParameters>]
+Out-Printer [[-PrinterName] <String>] [-Path] <String> [[-PaperSize] <String>] [[-FontName] <String>]
+ [[-FontSize] <Int32>] [[-Destination] <String>] [-OpenDestinationFile] [-Header <String>] [-Footer <String>]
+ [-LandScape] [-TopMargin <Int32>] [-BottomMargin <Int32>] [-LeftMargin <Int32>] [-RightMargin <Int32>]
+ [-NoTextWrapping]   [<CommonParameters>]
 ```
 
 ### ImagePath
 ```
-Out-Printer [-ImagePath] <String> [[-PrinterName] <String>] [[-PaperSize] <String>] [[-Destination] <String>]
- [-OpenDestinationFile] [-NumberPages] [-LandScape] [-TopMargin <Int32>] [-BottomMargin <Int32>]
- [-LeftMargin <Int32>] [-RightMargin <Int32>] [-NoImageScale] [<CommonParameters>]
+Out-Printer [[-PrinterName] <String>] [-ImagePath] <String> [[-PaperSize] <String>] [[-Destination] <String>]
+ [-OpenDestinationFile] [-LandScape] [-TopMargin <Int32>] [-BottomMargin <Int32>] [-LeftMargin <Int32>]
+ [-RightMargin <Int32>] [-NoImageScale] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,8 +41,7 @@ Out-Printer [-ImagePath] <String> [[-PrinterName] <String>] [[-PaperSize] <Strin
   be set, and page numbers can be requested.     
   Content can be piped into the command, optionally using its alias 'lp' to give     
   a Unix like | lp, or it can take the path to a text or image file as a parameter.    
-  If input is piped to the command it attempts to apply default formatting and to    
-  wrap text to fit the page size, but text read from a file is printed "as-is".    
+  If objects are piped into the command, it attempts to apply default formatting.    
   When using Print to PDF or similar output-to-file printers, the file name   
   can be specified, and if it is, the file can be opened in its default viewer.    
   There is an option to add page numbers which are positioned at the top of text   
@@ -85,7 +84,7 @@ Specifying -Verbose will give information on the scaling applied.
 
 ### Example 4
 ```powershell
-PS C:\> Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 -PaperSize 'A3' 
+PS C:\> Get-Service | ft -a | Out-Printer -Name 'Send To OneNote 2016' -LeftMargin 0 -RightMargin 0 -TopMargin 50 -FontSize 8 -PaperSize 'A3'
 ```
 
 This time services are formatted as an auto-sized table, and sent to OneNote.   
@@ -102,12 +101,12 @@ The font uses the Calibri typeface set in 9 point size.
 
 ### Example 6
 ```powershell
-PS C:\> dir | lp  -Dest ~\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Num -Open
+PS C:\> dir | lp  -Dest ~\Desktop\test3.pdf -Font 'Comic Sans MS' -Size 8 -top 0 -bottom 0 -left 0 -right 0 -Head "Page &[Page]" -Open
 ```
 
 This Example adds page numbers, but also uses the alias lp ; FontName can be shortened   
 to Font, FontSize to size and "margin" omitted from each of the four margin parameters.    
-The instructions to NumberPages and OpenDestinationFile can also be shortened.  
+The Header and OpenDestinationFile parameters can also be shortened.  
 
 ## PARAMETERS
 
@@ -251,21 +250,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -NumberPages
-If specified page numbers will be added at the top of the page.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -OpenDestinationFile
 If specified, the print is opened file after printing.    
 If the destination file is not specified, this value is ignored. 
@@ -273,7 +257,7 @@ If the destination file is not specified, this value is ignored.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases: Show:
+Aliases: Show
 
 Required: False
 Position: Named
@@ -299,8 +283,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-Path of text file to be printed.    
-Text read from a file is not be wrapped, to wrap text pipe the file into Out-Printer.
+Path of text file to be printed.
 
 ```yaml
 Type: String
@@ -360,9 +343,61 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Footer
+If specified page a footer will be added at the bottom of text pages.     
+Supports  &[Page] &[Date] &[Time] &[Path] &[Line] &[HistoryId], to insert   
+the page number, print date/time, file path (if applicable), PowerShell    
+command line, and PowerShell HistoryId.
+
+```yaml
+Type: String
+Parameter Sets: Default, TextPath
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Header
+If specified page a Header will be added at the top of text pages.     
+Supports  &[Page] &[Date] &[Time] &[Path] &[Line] &[HistoryId], to insert   
+the page number, print date/time, file path (if applicable), PowerShell    
+command line, and PowerShell HistoryId.
+
+```yaml
+Type: String
+Parameter Sets: Default, TextPath
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoTextWrapping
+By default, the command assumes the font is non-proportional and calculates how    
+many characters fit into the page width and attempts to wrap text at that number.    
+This switch prevents word-wrapping, for example text has been pre-formatted. 
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Default, TextPath
+Aliases: NoWrapText
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -374,4 +409,5 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## NOTES
 
 ## RELATED LINKS
+
 [Github](https://github.com/jhoneill/6Print)

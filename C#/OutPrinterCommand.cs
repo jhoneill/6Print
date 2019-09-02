@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace OutPrinterCommand
 {
@@ -123,9 +124,14 @@ namespace OutPrinterCommand
         [Parameter()]
         [Alias("Show")]
         public SwitchParameter OpenDestinationFile { get; set; }
-        //If specified page numbers will be added at the top of the page.
-        [Parameter()]
-        public SwitchParameter NumberPages { get; set; }
+        //If specified page a header will be added at the top of text pages. Supports  &[Page] &[Date] &[Time] &[Path] &[Line] &[HistoryId] 
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TextPath")]
+        public String Header { get; set; }
+        //If specified page a footer will be added at the bottom of text pages. Supports  &[Page] &[Date] &[Time] &[Path] &[Line] &[HistoryId] 
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TextPath")]
+        public String Footer { get; set; }
         //By default printing is portrait, unless -Landscape is specified.
         [Parameter()]
         public SwitchParameter LandScape { get; set; }
@@ -144,8 +150,13 @@ namespace OutPrinterCommand
         // could support resolution and monochrome... 
         //[Parameter()]
         //public SwitchParameter MonoChrome { get; set; }
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TextPath")]
+        [Alias("NoWrapText")]
+        public SwitchParameter NoTextWrapping { get; set; }
+        
         // Disable scaling of images when printing.
-        [Parameter()]
+        [Parameter(ParameterSetName = "ImagePath")]
         public SwitchParameter NoImageScale { get; set; }
         #endregion
         #region Other properties of the class 
@@ -163,6 +174,8 @@ namespace OutPrinterCommand
         private Font PrintFont;
         //Width of the page - this is calculated when the the parameters are set in BEGIN, and used by Out-String in the END block
         private int WidthInChars = 80;
+        //if - wrap specified a regex to wrap strings passed in. 
+        private Regex WrappingRegEx;
         //Used to track  the number of pages printed (may add an option to put the page number on the top of the page. 
         private int CurrentPageNo = 1;
         #endregion 
@@ -176,14 +189,36 @@ namespace OutPrinterCommand
             float yPos = 0;
             int linecount = 0;
             WriteProgress(new ProgressRecord(1, string.Format("Printing to {0}",PrintDocument.PrinterSettings.PrinterName), string.Format("Printing text. Page {0}, {1} lines in the buffer.", CurrentPageNo ,LinesToPrint.Count))) ;
-            if (NumberPages)
+  
+            if (! string.IsNullOrEmpty(Header))
             {
+                string PageHeader = Header.Replace("&[Page]",CurrentPageNo.ToString(),StringComparison.CurrentCultureIgnoreCase);
                 string PageLabel = string.Format("Page -- {0}" , CurrentPageNo);
-                float left = (PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageLabel, PrintFont).Width) / 2;
-                ev.Graphics.DrawString(PageLabel, PrintFont, Brushes.Black, left, PrintDocument.DefaultPageSettings.PrintableArea.Top);
-                if (PrintDocument.DefaultPageSettings.PrintableArea.Top + 2 * fontHeight > ev.MarginBounds.Top)
+                float left = (PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageHeader, PrintFont).Width) / 2;
+                float top = PrintDocument.DefaultPageSettings.PrintableArea.Top;
+                if (top < fontHeight) {
+                    top = fontHeight;
+                }
+                ev.Graphics.DrawString(PageHeader, PrintFont, Brushes.Black, left, top);
+                if (top + 2 * fontHeight > topEdge)
                 {
                     topEdge = topEdge + 2 * fontHeight;
+                    linesPerPage = linesPerPage - 2;
+                }
+            }
+            if (! string.IsNullOrEmpty(Footer))
+            {
+                string PageFooter = Footer.Replace("&[Page]",CurrentPageNo.ToString(),StringComparison.CurrentCultureIgnoreCase );
+                string PageLabel = string.Format("Page -- {0}" , CurrentPageNo);
+                float left = (PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageFooter, PrintFont).Width) / 2;
+                float bottom = PrintDocument.DefaultPageSettings.PrintableArea.Bottom;
+                if (bottom > (PrintDocument.DefaultPageSettings.PrintableArea.Bottom -fontHeight) )
+                {
+                    bottom = (PrintDocument.DefaultPageSettings.PrintableArea.Bottom -fontHeight);
+                }
+                ev.Graphics.DrawString(PageFooter, PrintFont, Brushes.Black, left, (bottom -fontHeight));
+                if (bottom - 2 * fontHeight < ev.MarginBounds.Bottom)
+                {
                     linesPerPage = linesPerPage - 2;
                 }
             }
@@ -343,7 +378,7 @@ namespace OutPrinterCommand
             float WidthInHundreths = DefPS.PaperSize.Width - DefPS.Margins.Left - DefPS.Margins.Right;
             float HeightInHundreths = DefPS.PaperSize.Height - DefPS.Margins.Top - DefPS.Margins.Bottom;
             #endregion
-            #region Decide print job name - use file name if there is one 
+            #region Decide print job name - use file name if there is one and construct header/footers
             if (null != ImagePath)
             {
                 PrintDocument.DocumentName = ImagePath;
@@ -351,10 +386,29 @@ namespace OutPrinterCommand
             else if (null != Path)
             {
                 PrintDocument.DocumentName = Path;
+                if (! String.IsNullOrEmpty(Header)) {
+                    Header = Header.Replace("&[Path]",Path,StringComparison.CurrentCultureIgnoreCase);
+                }
+                if (! String.IsNullOrEmpty(Footer)) {
+                    Footer = Footer.Replace("&[Path]",Path,StringComparison.CurrentCultureIgnoreCase);
+                }
             }
             else
             {
                 PrintDocument.DocumentName = "PowerShell Print Job";
+            }
+            Regex reg = new Regex("\\s*\\|\\s*(lp|Out-Printer).*$")  ;       
+            if (! String.IsNullOrEmpty(Header)) {
+                    Header = Header.Replace("&[Date]",System.DateTime.Now.ToString("d"),StringComparison.CurrentCultureIgnoreCase);
+                    Header = Header.Replace("&[Time]",System.DateTime.Now.ToString("t"),StringComparison.CurrentCultureIgnoreCase);
+                    Header = Header.Replace("&[Line]",reg.Replace(MyInvocation.Line,""),StringComparison.CurrentCultureIgnoreCase);
+                    Header = Header.Replace("&[HistoryId]",MyInvocation.HistoryId.ToString(),StringComparison.CurrentCultureIgnoreCase);
+            }
+            if (! String.IsNullOrEmpty(Footer)) {
+                    Footer = Footer.Replace("&[Date]",System.DateTime.Now.ToString("d"),StringComparison.CurrentCultureIgnoreCase);
+                    Footer = Footer.Replace("&[Time]",System.DateTime.Now.ToString("t"),StringComparison.CurrentCultureIgnoreCase);
+                    Footer = Footer.Replace("&[Line]",reg.Replace(MyInvocation.Line,""),StringComparison.CurrentCultureIgnoreCase);
+                    Footer = Footer.Replace("&[HistoryId]",MyInvocation.HistoryId.ToString(),StringComparison.CurrentCultureIgnoreCase);
             }
             #endregion
             #region Check user-specificed font exists, or fall back to lucida console. Determine chars per line. 
@@ -370,7 +424,9 @@ namespace OutPrinterCommand
 
             //Page size is hundreths of an inch. Font is in points @ 120 points : 1 inch, so page width in points is 1.2 x width in Hundredths. 
             WidthInChars = (int)Math.Truncate(WidthInHundreths * 1.2 / PrintFont.Size);
-
+            if (! NoTextWrapping) {
+                WrappingRegEx = new Regex("(.{1,XXX}$)|(.{1,XXX}[\\s,:;.,?!…]+)(?=\\w+)".Replace("XXX",WidthInChars.ToString())) ;
+            }
             WriteVerbose(string.Format("Any text will be printed in {0} {1}-point. Print area is {2:N2} inches tall X {3:N2} inches wide = {4:N0} characters.",new object[] {PrintFont.Name , PrintFont.Size , (HeightInHundreths / 100), (WidthInHundreths / 100), WidthInChars}));
             #endregion
         }
@@ -383,10 +439,12 @@ namespace OutPrinterCommand
                 if (System.IO.File.Exists(Path))
                 {
                     WriteVerbose(string.Format("Reading from {0}.",Path));
-                    string[] FileContent = System.IO.File.ReadAllLines(Path);
-                    foreach (string FileLine in FileContent)
-                    {
-                        LinesToPrint.Add(FileLine);
+                    string text = System.IO.File.ReadAllText(Path) ;
+                    if (null != WrappingRegEx) {
+                        text =  WrappingRegEx.Replace(text,"$1$2\n");
+                    }
+                    foreach (string s in text.Split(new string[] {"\n","\r\n"},System.StringSplitOptions.RemoveEmptyEntries)) {
+                        LinesToPrint.Add(s);
                     }
                 }
                 else
@@ -402,6 +460,20 @@ namespace OutPrinterCommand
                 {
                     WriteVerbose("Input is an image");
                     Bitmap = InputObject.BaseObject as Bitmap;
+                }
+                else if (InputObject.BaseObject is string) {
+                    //Split a multi-line string of n lines into n strings and add them individually.
+                    string text = "";
+                    if (null != WrappingRegEx) {
+                        text =  WrappingRegEx.Replace(InputObject.BaseObject.ToString(),"$1$2\n");
+                    }
+                    else
+                    {
+                        text = InputObject.BaseObject.ToString();    
+                    }
+                    foreach (string s in text.Split(new string[] {"\n","\r\n"},System.StringSplitOptions.RemoveEmptyEntries)) {
+                        ThingsToPrint.Add(s);
+                    }
                 }
                 else
                 {
