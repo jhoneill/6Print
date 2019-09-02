@@ -435,7 +435,7 @@ namespace OutPrinterCommand
             //Regex will treat end of line as $ and match either on a line of 1 to Width, or that number of chars -1  followed by space(s) or punctuation
             if (! NoTextWrapping) {
                 string r = "(.{1,XXX}$)|".Replace("XXX",WidthInChars.ToString());
-                r = r + "(.{1,XXX}[\\s,:;.,?!…]+)(?=\\w+)".Replace("XXX",(WidthInChars-1).ToString()) ; 
+                r = r + "(.{1,XXX}[\\s:;,.-?!…]+)(?=\\w+)".Replace("XXX",(WidthInChars-1).ToString()) ; 
                 WrappingRegEx = new Regex(r,RegexOptions.Multiline ) ;
             }
             WriteVerbose(string.Format("Any text will be printed in {0} {1}-point. Print area is {2:N2} inches tall X {3:N2} inches wide = {4:N0} characters.",new object[] {PrintFont.Name , PrintFont.Size , (HeightInHundreths / 100), (WidthInHundreths / 100), WidthInChars}));
