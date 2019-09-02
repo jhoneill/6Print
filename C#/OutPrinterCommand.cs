@@ -89,8 +89,7 @@ namespace OutPrinterCommand
         //Name of printer - can specify either -Printer or -Name. If not specified, the default printer will be used
         [Parameter(Position = 1), ValidateSet(typeof(PrinterNameValidator), ErrorMessage = "'{0}' is not a valid printer on this computer.")] // ArgumentCompleter(typeof(PrinterNameCompleter))]
         [Alias("Name")]
-        public string PrinterName { get; set; }
-        
+        public string PrinterName { get; set; }       
         //Specifies the content to be sent to the printer. This can be objects to print, or the target for piped objects.
         [Parameter(ValueFromPipeline = true, ParameterSetName = "Default", Position = 1)]
         public PSObject InputObject { get; set; }
@@ -101,7 +100,6 @@ namespace OutPrinterCommand
         //Path to a BMP, GIF, JPEG, PNG or TIFF file to be printed.
         [Parameter(ParameterSetName = "ImagePath", Position = 1, Mandatory = true)]
         public string ImagePath { get; set; }
-
         //Name of a paper-size on the selected printer (e.g A4, Letter)
         [Parameter(Position = 2), ArgumentCompleter(typeof(PaperSizeCompleter))]
         public string PaperSize { get; set; }
@@ -150,11 +148,11 @@ namespace OutPrinterCommand
         // could support resolution and monochrome... 
         //[Parameter()]
         //public SwitchParameter MonoChrome { get; set; }
+        //Disable wrapping text
         [Parameter(ParameterSetName = "Default")]
         [Parameter(ParameterSetName = "TextPath")]
         [Alias("NoWrapText")]
         public SwitchParameter NoTextWrapping { get; set; }
-        
         // Disable scaling of images when printing.
         [Parameter(ParameterSetName = "ImagePath")]
         public SwitchParameter NoImageScale { get; set; }
@@ -174,8 +172,11 @@ namespace OutPrinterCommand
         private Font PrintFont;
         //Width of the page - this is calculated when the the parameters are set in BEGIN, and used by Out-String in the END block
         private int WidthInChars = 80;
-        //if - wrap specified a regex to wrap strings passed in. 
+        //Unless wrapping is disabled, holds regex to wrap text at that width. 
         private Regex WrappingRegEx;
+        //Used to preserve Multiple line breaks in the text. Matches on the point preceed by LF and followed by CR or LF. 
+        private Regex CrLfRegEx = new Regex("(?<=\\n)(?=\\r|\\n)");
+        
         //Used to track  the number of pages printed (may add an option to put the page number on the top of the page. 
         private int CurrentPageNo = 1;
         #endregion 
@@ -189,11 +190,16 @@ namespace OutPrinterCommand
             float yPos = 0;
             int linecount = 0;
             WriteProgress(new ProgressRecord(1, string.Format("Printing to {0}",PrintDocument.PrinterSettings.PrinterName), string.Format("Printing text. Page {0}, {1} lines in the buffer.", CurrentPageNo ,LinesToPrint.Count))) ;
-  
+            if (CurrentPageNo == 1)
+            {
+                WriteVerbose(string.Format("Printing with margins: top={0:N0} left={1:N0}. {2} lines per page.", topEdge, leftEdge, Math.Truncate(linesPerPage)));
+            }
+            #region add header/footer if required
             if (! string.IsNullOrEmpty(Header))
             {
+                //put the page number in. Set Left to center it, and as high as printable, but top at least 1 line from the paper edge. 
+                //If there isn't 1 clear line between the bottom of the header and the printing area, take 2 lines off the top of the print area
                 string PageHeader = Header.Replace("&[Page]",CurrentPageNo.ToString(),StringComparison.CurrentCultureIgnoreCase);
-                string PageLabel = string.Format("Page -- {0}" , CurrentPageNo);
                 float left = (PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageHeader, PrintFont).Width) / 2;
                 float top = PrintDocument.DefaultPageSettings.PrintableArea.Top;
                 if (top < fontHeight) {
@@ -207,9 +213,10 @@ namespace OutPrinterCommand
                 }
             }
             if (! string.IsNullOrEmpty(Footer))
-            {
+            { 
+                //put the page number in. Set Left to center it, and as low as printable, but top at least 1 line from the paper edge. 
+                //If there isn't 1 clear line between the top of the header and the printing area, take 2 lines off the top of the print area
                 string PageFooter = Footer.Replace("&[Page]",CurrentPageNo.ToString(),StringComparison.CurrentCultureIgnoreCase );
-                string PageLabel = string.Format("Page -- {0}" , CurrentPageNo);
                 float left = (PrintDocument.DefaultPageSettings.PaperSize.Width - ev.Graphics.MeasureString(PageFooter, PrintFont).Width) / 2;
                 float bottom = PrintDocument.DefaultPageSettings.PrintableArea.Bottom;
                 if (bottom > (PrintDocument.DefaultPageSettings.PrintableArea.Bottom -fontHeight) )
@@ -222,19 +229,17 @@ namespace OutPrinterCommand
                     linesPerPage = linesPerPage - 2;
                 }
             }
-            if (CurrentPageNo == 1)
-            {
-                WriteVerbose(string.Format("Printing with margins: top={0:N0} left={1:N0}. {2} lines per page.", topEdge, leftEdge, Math.Truncate(linesPerPage)));
-            }
-            // Print lines from 0..LinesPerPage -1 if we don't run out first
+            #endregion
+
+            // Print lines from 0..LinesPerPage -1 if we don't run out first; then remove those lines from buffer
             while (linecount < linesPerPage && LinesToPrint.Count > linecount)
             {
                 yPos = topEdge + linecount * fontHeight;
                 ev.Graphics.DrawString(LinesToPrint[linecount], PrintFont, Brushes.Black, leftEdge, yPos);
                 linecount++;
             }
-
             LinesToPrint.RemoveRange(0, linecount);
+            
             // If more lines exist, print another page.
             if (LinesToPrint.Count > 0)
             {
@@ -259,16 +264,19 @@ namespace OutPrinterCommand
             }
             else
             {
+                //are we fitting by width or height ? 
                 bool FitToWidth = Bitmap.Size.Width > Bitmap.Size.Height;
+                //if the bitmap is smaller than the printing are, just print it. If it is bigger work out the ratio to scale by
                 if (Bitmap.Size.Width < ev.MarginBounds.Width && Bitmap.Size.Height < ev.MarginBounds.Height)
                 {
-
                     AdjustedImagesize = new Size(Bitmap.Size.Width, Bitmap.Size.Height);
                 }
                 else
                 {
-                    if (FitToWidth) { ratio = ev.MarginBounds.Width / (float)Bitmap.Size.Width; }
-                    else { ratio = ev.MarginBounds.Height / (float)Bitmap.Size.Height; }
+                    // Scale by the tighter constraint of fitting to width or to height. 
+                    float hRatio = (ev.MarginBounds.Width / (float)Bitmap.Size.Width );
+                    float vRatio = (ev.MarginBounds.Height / (float)Bitmap.Size.Height);
+                    ratio = (hRatio < vRatio) ? hRatio : vRatio;  
                     AdjustedImagesize = new Size(Convert.ToInt32(Bitmap.Size.Width * ratio), Convert.ToInt32(Bitmap.Size.Height * ratio));
                 }
             }
@@ -283,7 +291,6 @@ namespace OutPrinterCommand
             ev.HasMorePages = false;
         }
         #endregion
-
         protected override void BeginProcessing()
         {
             base.BeginProcessing();
@@ -424,15 +431,19 @@ namespace OutPrinterCommand
 
             //Page size is hundreths of an inch. Font is in points @ 120 points : 1 inch, so page width in points is 1.2 x width in Hundredths. 
             WidthInChars = (int)Math.Truncate(WidthInHundreths * 1.2 / PrintFont.Size);
+            //We won't text wrap if the regex is left empty. 
+            //Regex will treat end of line as $ and match either on a line of 1 to Width, or that number of chars -1  followed by space(s) or punctuation
             if (! NoTextWrapping) {
-                WrappingRegEx = new Regex("(.{1,XXX}$)|(.{1,XXX}[\\s,:;.,?!…]+)(?=\\w+)".Replace("XXX",WidthInChars.ToString())) ;
+                string r = "(.{1,XXX}$)|".Replace("XXX",WidthInChars.ToString());
+                r = r + "(.{1,XXX}[\\s,:;.,?!…]+)(?=\\w+)".Replace("XXX",(WidthInChars-1).ToString()) ; 
+                WrappingRegEx = new Regex(r,RegexOptions.Multiline ) ;
             }
             WriteVerbose(string.Format("Any text will be printed in {0} {1}-point. Print area is {2:N2} inches tall X {3:N2} inches wide = {4:N0} characters.",new object[] {PrintFont.Name , PrintFont.Size , (HeightInHundreths / 100), (WidthInHundreths / 100), WidthInChars}));
             #endregion
         }
         protected override void ProcessRecord()
         {
-            #region Load any text file specified by -path - assume it fits to lines. 
+            #region Load any text file specified by -path split it into lines 
             if (null != Path)
             {
                 Path = GetUnresolvedProviderPathFromPSPath(Path);
@@ -440,20 +451,25 @@ namespace OutPrinterCommand
                 {
                     WriteVerbose(string.Format("Reading from {0}.",Path));
                     string text = System.IO.File.ReadAllText(Path) ;
+                    //Convert any blank lines in the source text to spaces to stop split discarding them as empty   
+                    text = CrLfRegEx.Replace(text," ");
+                    //If we are wrapping text use a predefined regex to make a long string into a multi-line string.
                     if (null != WrappingRegEx) {
                         text =  WrappingRegEx.Replace(text,"$1$2\n");
                     }
+                    //Split a multi-line string of n lines into n strings and add them individually;
+                    //there won't be other objects so add them to "lines to print" and skip 
                     foreach (string s in text.Split(new string[] {"\n","\r\n"},System.StringSplitOptions.RemoveEmptyEntries)) {
                         LinesToPrint.Add(s);
                     }
                 }
                 else
                 {
-                    WriteWarning(string.Format("Can't open file '{0}.", Path));
+                    WriteWarning(string.Format("Cannot find file '{0}.", Path));
                 }
             }
             #endregion
-            #region Collect data based in InputObject (i.e. piped) special treatment for a bitmap 
+            #region Collect data based in InputObject (i.e. piped).3 cases: "bitmap", "String" & "Object for Out-String to process"
             else if (null != InputObject)
             {
                 if (InputObject.BaseObject is Bitmap)
@@ -462,15 +478,19 @@ namespace OutPrinterCommand
                     Bitmap = InputObject.BaseObject as Bitmap;
                 }
                 else if (InputObject.BaseObject is string) {
-                    //Split a multi-line string of n lines into n strings and add them individually.
+                    //Convert any blank lines in the source text to spaces to stop split discarding them as empty   
+                    //and if we are wrapping text, use a predefined regex to make a long string into a multi-line string.
                     string text = "";
                     if (null != WrappingRegEx) {
-                        text =  WrappingRegEx.Replace(InputObject.BaseObject.ToString(),"$1$2\n");
+                        text =  CrLfRegEx.Replace(InputObject.BaseObject.ToString()," ");
+                        text =  WrappingRegEx.Replace(text.ToString(),"$1$2\n");
                     }
                     else
                     {
-                        text = InputObject.BaseObject.ToString();    
+                        text = CrLfRegEx.Replace(InputObject.BaseObject.ToString()," ");
                     }
+                    //Split a multi-line string of n lines into n strings and add them individually; 
+                    //We may have a mix of objects so add them to "things to print" so the objects get formatted by out-string.
                     foreach (string s in text.Split(new string[] {"\n","\r\n"},System.StringSplitOptions.RemoveEmptyEntries)) {
                         ThingsToPrint.Add(s);
                     }
@@ -481,7 +501,7 @@ namespace OutPrinterCommand
                 }
             }
             #endregion
-            #region Load any image specified by -imagepath; print it, or any bitmap piped in.
+            #region Load any image specified by -imagepath; print it.
             else if (null != ImagePath)
             {
                 ImagePath = GetUnresolvedProviderPathFromPSPath(ImagePath);

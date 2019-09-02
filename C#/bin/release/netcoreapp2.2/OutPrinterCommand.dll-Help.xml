@@ -271,8 +271,7 @@ If the destination file is not specified, this value is ignored.</maml:para>
             <maml:para>If specified page a footer will be added at the bottom of text pages.
 Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
 the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
+command line, and PowerShell HistoryId.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -287,8 +286,7 @@ command line, and PowerShell HistoryId
             <maml:para>If specified page a Header will be added at the top of text pages.
 Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
 the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
+command line, and PowerShell HistoryId.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -300,9 +298,9 @@ command line, and PowerShell HistoryId
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoWrapText">
           <maml:name>NoTextWrapping</maml:name>
           <maml:Description>
-            <maml:para>By default the command assumes the font is non-proportional and calculates how
-many characters will fit in the page width and attempts to wrap text at that
-number. This switch prevents word-wrapping, for example text has been  pre-formatted.</maml:para>
+            <maml:para>By default, the command assumes the font is non-proportional and calculates how
+many characters fit into the page width and attempts to wrap text at that number.
+This switch prevents word-wrapping, for example text has been pre-formatted.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -479,8 +477,7 @@ If the destination file is not specified, this value is ignored.</maml:para>
             <maml:para>If specified page a footer will be added at the bottom of text pages.
 Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
 the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
+command line, and PowerShell HistoryId.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -495,8 +492,7 @@ command line, and PowerShell HistoryId
             <maml:para>If specified page a Header will be added at the top of text pages.
 Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
 the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
+command line, and PowerShell HistoryId.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -508,9 +504,9 @@ command line, and PowerShell HistoryId
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoWrapText">
           <maml:name>NoTextWrapping</maml:name>
           <maml:Description>
-            <maml:para>By default the command assumes the font is non-proportional and calculates how
-many characters will fit in the page width and attempts to wrap text at that
-number. This switch prevents word-wrapping, for example text has been  pre-formatted.</maml:para>
+            <maml:para>By default, the command assumes the font is non-proportional and calculates how
+many characters fit into the page width and attempts to wrap text at that number.
+This switch prevents word-wrapping, for example text has been pre-formatted.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -651,38 +647,6 @@ If the destination file is not specified, this value is ignored.</maml:para>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
             <maml:name>Int32</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Footer</maml:name>
-          <maml:Description>
-            <maml:para>If specified page a footer will be added at the bottom of text pages.
-Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
-the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
-          </maml:Description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Header</maml:name>
-          <maml:Description>
-            <maml:para>If specified page a Header will be added at the top of text pages.
-Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
-the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
-          </maml:Description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -884,8 +848,7 @@ If not specified, the default printer will be used.</maml:para>
           <maml:para>If specified page a footer will be added at the bottom of text pages.
 Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
 the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
+command line, and PowerShell HistoryId.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -900,8 +863,7 @@ command line, and PowerShell HistoryId
           <maml:para>If specified page a Header will be added at the top of text pages.
 Supports  &amp;[Page] &amp;[Date] &amp;[Time] &amp;[Path] &amp;[Line] &amp;[HistoryId], to insert
 the page number, print date/time, file path (if applicable), PowerShell
-command line, and PowerShell HistoryId
-</maml:para>
+command line, and PowerShell HistoryId.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -913,9 +875,9 @@ command line, and PowerShell HistoryId
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoWrapText">
         <maml:name>NoTextWrapping</maml:name>
         <maml:Description>
-          <maml:para>By default the command assumes the font is non-proportional and calculates how
-many characters will fit in the page width and attempts to wrap text at that
-number. This switch prevents word-wrapping, for example text has been  pre-formatted.</maml:para>
+          <maml:para>By default, the command assumes the font is non-proportional and calculates how
+many characters fit into the page width and attempts to wrap text at that number.
+This switch prevents word-wrapping, for example text has been pre-formatted.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
