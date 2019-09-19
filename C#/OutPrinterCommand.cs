@@ -174,7 +174,7 @@ namespace OutPrinterCommand
         private int WidthInChars = 80;
         //Unless wrapping is disabled, holds regex to wrap text at that width. 
         private Regex WrappingRegEx;
-        //Used to preserve Multiple line breaks in the text. Matches on the point preceed by LF and followed by CR or LF. 
+        //Used to preserve Multiple line breaks in the text. Matches a blank line or on the point preceed by LF and followed by CR or LF. We will put a space there so line isn't blank.
         private Regex BlankLineRegEx = new Regex("^$|(?<=\\n)(?=\\r|\\n)");
         
         //Used to track  the number of pages printed (may add an option to put the page number on the top of the page. 
@@ -481,9 +481,6 @@ namespace OutPrinterCommand
                     //Convert any blank lines in the source text to spaces to stop split discarding them as empty   
                     //and if we are wrapping text, use a predefined regex to make a long string into a multi-line string.
                     string text = BlankLineRegEx.Replace(InputObject.BaseObject.ToString()," ");
-                    if (text == "") {
-                        text = " ";
-                    }
                     if (null != WrappingRegEx) {
                         text =  WrappingRegEx.Replace(text.ToString(),"$1$2\n");
                     }
