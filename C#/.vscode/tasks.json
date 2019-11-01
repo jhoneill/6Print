@@ -7,7 +7,9 @@
             "label": "Debug Build",
             "type": "shell",
             "windows": {
-                "options": {"cwd": ""},
+                "options": {
+                    "cwd": ""
+                },
                 "command": ".\\buildme.ps1"
             }
         },
@@ -15,17 +17,26 @@
             "label": "Release Build",
             "type": "shell",
             "windows": {
-                "options": {"cwd": ""},
+                "options": {
+                    "cwd": ""
+                },
                 "command": ".\\buildme.ps1 -release"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         },
         {
             "label": "Quick Release Build",
             "type": "shell",
             "windows": {
-                "options": {"cwd": ""},
+                "options": {
+                    "cwd": ""
+                },
                 "command": ".\\buildme.ps1 -release -quick"
-            },
+            }
         }
     ]
 }

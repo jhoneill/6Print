@@ -26,28 +26,52 @@ Get-ChildItem *.csproj | ForEach-Object {
 
     if ($Quick) {return}
 
-    if (Test-path -Path .\mdHelp -PathType Container  ) {
-        New-ExternalHelp -Path .\mdHelp\ -OutputPath $path  -Force
-    }
+    Write-Host -ForegroundColor Green "Building help files..."
 
+    if (Test-path -Path .\mdHelp -PathType Container  ) {
+        New-ExternalHelp -Path .\mdHelp\ -OutputPath $path  -Force | ForEach-Object -MemberName Name
+     }
+
+    $FormatsToProcess = (Get-ChildItem "$path\*.format.ps1xml").Name
+    $TypesToProcess   = (Get-ChildItem "$path\*.types.ps1xml").Name
+    $NestedModules    = @()
+    $functions  = @() ;  Get-ChildItem "$path\*.cdxml" | ForEach-Object {
+        $NestedModules += $_.name
+        $x=[xml](Get-Content $_)
+        $cimNoun =   $x.PowerShellMetadata.Class.DefaultNoun
+        $cimverbs = @()
+        $cimVerbs += $x.PowerShellMetadata.Class.StaticCmdlets.Cmdlet.CmdletMetaData.verb
+        $cimVerbs += $x.PowerShellMetadata.Class.InstanceCmdlets.Cmdlet.CmdletMetaData.verb
+        foreach ($v in $cimVerbs) {if ($null -ne $v) {$functions += "$v-$cimNoun"}}
+    }
+    $NestedModules +=  (Get-ChildItem "$path\*.ps1").Name
+    Select-String -Path "$path\*.ps1" -Pattern ("function\s+((" +  ((get-verb).verb -join "|" ) + ")-\w+)")   |
+        ForEach-Object {$functions += $_.Matches.Groups[1].value}
 
     $path = "$path\$moduleName"
     if ($Release) {
         Remove-Item  "$path.deps.json" -ErrorAction SilentlyContinue
         Remove-Item  "$path.pdb"       -ErrorAction SilentlyContinue
     }
+
     Import-Module "$Path.dll"
+
     $CmdletsToExport = (Get-Command -Module $moduleName -CommandType Cmdlet).Name
     $AliasesToExport = (Get-Alias | Where-Object {$_.source -eq $moduleName}).Name
-
+    Write-Host -ForegroundColor Green  "Exporting $($CmdletsToExport.Count ) cmdlet(s), $($functions.count) function(s) and $($AliasesToExport.Count) Aliase(s)"
+    Write-Host -ForegroundColor Green "Importing $($NestedModules.count) module(s), $($FormatsToProcess.count) format file(s), and $($TypesToProcess.count) type file(s)."
     $Params = @{
+        Path                 = "$Path.PSD1"
         Guid                 = $GUID
         RootModule           = ".\$moduleName.dll"
+        NestedModules        = $NestedModules
         PowerShellVersion    = $PowerShellVersion
         CompatiblePSEditions = $CompatiblePSEditions
-        Path                 = "$Path.PSD1"
+        FunctionsToExport    = $functions
         CmdletsToExport      = $CmdletsToExport
         AliasesToExport      = $AliasesToExport
+        TypesToProcess       = $TypesToProcess
+        FormatsToProcess     = $FormatsToProcess
     }
 
     if ($pg.Authors)             {$Params["Author"]        = $pg.Authors }
@@ -59,9 +83,7 @@ Get-ChildItem *.csproj | ForEach-Object {
     if ($pg.PackageProjectUrl)   {$Params["ProjectUri"]    = $pg.PackageProjectUrl}
     if ($pg.PackageReleaseNotes) {$Params["ReleaseNotes"]  = $ps.PackageReleaseNotes}
     if ($pg.PackageTags)         {$Params["Tags"]          = $pg.PackageTags -split "\s*[,;]\s*"}
-
     New-ModuleManifest @Params
 
+    Import-Module $Params.Path
 }
-
-
