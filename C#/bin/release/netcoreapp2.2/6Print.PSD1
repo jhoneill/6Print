@@ -68,14 +68,28 @@ PowerShellVersion = '6.0'
 # ScriptsToProcess = @()
 
 # Type files (.ps1xml) to be loaded when importing this module
-# TypesToProcess = @()
+TypesToProcess = 'MSFT_Printer.types.ps1xml',
+                 'MSFT_PrinterConfiguration.types.ps1xml',
+                 'MSFT_PrinterProperty.types.ps1xml',
+                 'MSFT_PrintJob.types.ps1xml'
 
 # Format files (.ps1xml) to be loaded when importing this module
-# FormatsToProcess = @()
+FormatsToProcess  = 'MSFT_Printer.format.ps1xml',
+                    'MSFT_PrinterConfiguration.format.ps1xml',
+                    'MSFT_PrinterDriver.format.ps1xml',
+                    'MSFT_PrinterPort.format.ps1xml',
+                    'MSFT_PrinterProperty.format.ps1xml',
+                    'MSFT_PrintJob.format.ps1xml'
 
-# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-# NestedModules = @()
-
+# Modules to import as nested modules of the module specified in ModuleToProcess
+NestedModules = 'MSFT_Printer_v6.0.cdxml',
+                'MSFT_PrinterConfiguration_v6.0.cdxml',
+                'MSFT_PrinterDriver_v6.0.cdxml',
+                'MSFT_PrinterPort_v6.0.cdxml',
+                'MSFT_PrinterProperty_v6.0.cdxml',
+                'MSFT_PrinterPortTasks_v6.0.cdxml',
+                'MSFT_PrintJob_v6.0.cdxml',
+                'ArgumentCompleters.ps1'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = '*'
 
@@ -128,4 +142,3 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
-
