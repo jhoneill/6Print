@@ -91,13 +91,19 @@ NestedModules = 'MSFT_Printer_v6.0.cdxml',
                 'MSFT_PrintJob_v6.0.cdxml',
                 'ArgumentCompleters.ps1'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = '*'
+FunctionsToExport =      'Get-PrintConfiguration', 'Set-PrintConfiguration',
+    'Add-Printer',       'Get-Printer',            'Remove-Printer',       'Rename-Printer',   'Set-Printer',
+    'Add-PrinterDriver', 'Get-PrinterDriver',      'Remove-PrinterDriver',
+    'Add-PrinterPort',   'Get-PrinterPort',        'Remove-PrinterPort',
+                         'Get-PrinterProperty',    'Set-PrinterProperty',
+                         'Get-PrintJob',           'Remove-PrintJob',      'Restart-PrintJob', 'Resume-PrintJob', 'Suspend-PrintJob
+'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = 'Get-DefaultPrinter', 'Out-Printer', 'Set-DefaultPrinter'
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'lp'
