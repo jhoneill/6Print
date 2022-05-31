@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\OutPrinterCommand.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\OutPrinterCommand.csproj": {
+      "version": "6.2.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\OutPrinterCommand.csproj",
+        "projectName": "OutPrinterCommand",
+        "projectPath": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\OutPrinterCommand.csproj",
+        "packagesPath": "C:\\Users\\mcp\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mcp\\Documents\\GitHub\\6Print\\C#\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\mcp\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "targetAlias": "netcoreapp2.2",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "targetAlias": "netcoreapp2.2",
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.PowerShell.SDK": {
+              "target": "Package",
+              "version": "[6.2.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.203\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
